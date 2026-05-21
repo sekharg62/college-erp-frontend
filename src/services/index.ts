@@ -1,4 +1,5 @@
 import axios, { type AxiosRequestConfig } from 'axios'
+import { STORAGE_KEYS } from '../constants'
 
 const baseURL = `${import.meta.env.VITE_API_URL}/api`
 
@@ -8,6 +9,15 @@ const axiosInstance = axios.create({
     'Content-Type': 'application/json',
   },
   withCredentials: true,
+})
+
+axiosInstance.interceptors.request.use((config) => {
+  const token = localStorage.getItem(STORAGE_KEYS.ACCESS_TOKEN)
+  const tokenType = localStorage.getItem(STORAGE_KEYS.TOKEN_TYPE) ?? 'Bearer'
+  if (token) {
+    config.headers.Authorization = `${tokenType} ${token}`
+  }
+  return config
 })
 
 export const apiClient = {
