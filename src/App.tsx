@@ -15,6 +15,11 @@ import AdminLoginPage from './pages/AdminLoginPage'
 import AdminPage from './pages/AdminPage'
 import StudentLoginPage from './pages/StudentLoginPage'
 import StudentDashboardPage from './pages/student/StudentDashboardPage'
+import StudentFirstYearPage from './pages/student/StudentFirstYearPage'
+import StudentFourthYearPage from './pages/student/StudentFourthYearPage'
+import StudentSecondYearPage from './pages/student/StudentSecondYearPage'
+import MaarListPage from './pages/student/MaarListPage'
+import StudentThirdYearPage from './pages/student/StudentThirdYearPage'
 import TeacherLoginPage from './pages/TeacherLoginPage'
 import TeacherDashboardPage from './pages/teacher/TeacherDashboardPage'
 import TeacherBulkStudentsPage from './pages/teacher/TeacherBulkStudentsPage'
@@ -40,6 +45,26 @@ function AppRoutes() {
         <Route element={<StudentProtectedRoute />}>
           <Route element={<StudentDashboardLayout />}>
             <Route path="/student/dashboard" element={<StudentDashboardPage />} />
+            <Route
+              path="/student/dashboard/1st-year"
+              element={<StudentFirstYearPage />}
+            />
+            <Route
+              path="/student/dashboard/2nd-year"
+              element={<StudentSecondYearPage />}
+            />
+            <Route
+              path="/student/dashboard/3rd-year"
+              element={<StudentThirdYearPage />}
+            />
+            <Route
+              path="/student/dashboard/4th-year"
+              element={<StudentFourthYearPage />}
+            />
+            <Route
+              path="/student/dashboard/maar-list"
+              element={<MaarListPage />}
+            />
           </Route>
         </Route>
         <Route path="/admin/login" element={<AdminLoginPage />} />

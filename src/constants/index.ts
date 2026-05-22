@@ -1,3 +1,5 @@
+export { SITE_CONFIG, type SiteConfig } from './siteConfig'
+
 export const STORAGE_KEYS = {
   ACCESS_TOKEN: 'accessToken',
   TOKEN_TYPE: 'tokenType',

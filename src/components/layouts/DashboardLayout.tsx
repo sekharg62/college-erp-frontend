@@ -128,7 +128,7 @@ export default function DashboardLayout({
             title={label}
             onClick={() => setMobileOpen(false)}
             className={({ isActive }) =>
-              `flex h-11 items-center overflow-hidden rounded-xl text-sm font-medium transition-colors ${getSidebarLinkClass(isActive, theme)}`
+              `flex h-11 items-center overflow-hidden rounded-md text-sm font-medium transition-colors ${getSidebarLinkClass(isActive, theme)}`
             }
           >
             <SidebarIconSlot>
@@ -189,8 +189,8 @@ export default function DashboardLayout({
           <Menu size={22} />
         </button>
 
-        {/* <span className="text-lg font-bold tracking-tight text-amber-500">
-          MAAR
+        {/*         <span className="text-lg font-bold tracking-tight text-amber-500">
+          {SITE_CONFIG.brandName}
         </span> */}
         <span className={`hidden text-xs font-medium uppercase sm:inline ${mutedClass}`}>
           {portalLabel} Portal
