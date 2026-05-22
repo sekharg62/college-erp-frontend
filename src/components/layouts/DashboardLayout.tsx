@@ -1,6 +1,5 @@
+import type { LucideIcon } from 'lucide-react'
 import {
-  Building2,
-  LayoutDashboard,
   LogOut,
   Menu,
   Moon,
@@ -10,13 +9,22 @@ import {
 import { useState, type CSSProperties, type ReactNode } from 'react'
 import { NavLink, Outlet, useNavigate } from 'react-router-dom'
 import { toast } from 'sonner'
-import { useAdminAuth } from '../../context/AdminAuthContext'
 import { useTheme, type Theme } from '../../context/ThemeContext'
 
-const navItems = [
-  { to: '/admin/dashboard', label: 'Dashboard', icon: LayoutDashboard, end: true },
-  { to: '/admin', label: 'Create Institute', icon: Building2, end: false },
-] as const
+export type DashboardNavItem = {
+  to: string
+  label: string
+  icon: LucideIcon
+  end?: boolean
+}
+
+export type DashboardLayoutProps = {
+  portalLabel: string
+  user: { name: string } | null
+  onLogout: () => void
+  loginPath: string
+  navItems: readonly DashboardNavItem[]
+}
 
 const SIDEBAR_COLLAPSED = '4.5rem'
 const SIDEBAR_EXPANDED = '16rem'
@@ -65,9 +73,14 @@ function SidebarIconSlot({ children }: { children: ReactNode }) {
   )
 }
 
-export default function DashboardLayout() {
+export default function DashboardLayout({
+  portalLabel,
+  user,
+  onLogout,
+  loginPath,
+  navItems,
+}: DashboardLayoutProps) {
   const { theme, toggleTheme } = useTheme()
-  const { user, logout } = useAdminAuth()
   const navigate = useNavigate()
   const [mobileOpen, setMobileOpen] = useState(false)
 
@@ -97,9 +110,9 @@ export default function DashboardLayout() {
   } as CSSProperties
 
   const handleLogout = () => {
-    logout()
+    onLogout()
     toast.success('Logged out successfully')
-    navigate('/admin/login', { replace: true })
+    navigate(loginPath, { replace: true })
   }
 
   const showLabels = mobileOpen
@@ -107,7 +120,7 @@ export default function DashboardLayout() {
   const sidebarContent = (
     <>
       <nav className="flex flex-1 flex-col gap-1 py-3">
-        {navItems.map(({ to, label, icon: Icon, end }) => (
+        {navItems.map(({ to, label, icon: Icon, end = true }) => (
           <NavLink
             key={to}
             to={to}
@@ -130,7 +143,7 @@ export default function DashboardLayout() {
         <div className="mb-1 flex h-11 items-center overflow-hidden">
           <SidebarIconSlot>
             <div className="flex h-9 w-9 items-center justify-center rounded-full bg-amber-500/15 text-sm font-semibold text-amber-500">
-              {user?.name?.charAt(0).toUpperCase() ?? 'A'}
+              {user?.name?.charAt(0).toUpperCase() ?? 'T'}
             </div>
           </SidebarIconSlot>
           <SidebarLabel forceShow={showLabels}>
@@ -180,7 +193,7 @@ export default function DashboardLayout() {
           MAAR
         </span>
         <span className={`hidden text-xs font-medium uppercase sm:inline ${mutedClass}`}>
-          Admin
+          {portalLabel}
         </span>
 
         <p className={`ml-auto hidden text-sm font-medium sm:block ${mutedClass}`}>
