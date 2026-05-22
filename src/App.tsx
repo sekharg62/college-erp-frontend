@@ -14,6 +14,8 @@ import AdminPage from './pages/AdminPage'
 import StudentPage from './pages/StudentPage'
 import TeacherLoginPage from './pages/TeacherLoginPage'
 import TeacherDashboardPage from './pages/teacher/TeacherDashboardPage'
+import TeacherBulkStudentsPage from './pages/teacher/TeacherBulkStudentsPage'
+import TeacherStudentsPage from './pages/teacher/TeacherStudentsPage'
 
 function AppRoutes() {
   const location = useLocation()
@@ -35,6 +37,14 @@ function AppRoutes() {
         <Route element={<TeacherProtectedRoute />}>
           <Route element={<TeacherDashboardLayout />}>
             <Route path="/teacher/dashboard" element={<TeacherDashboardPage />} />
+            <Route
+              path="/teacher/dashboard/students"
+              element={<TeacherStudentsPage />}
+            />
+            <Route
+              path="/teacher/dashboard/students/bulk"
+              element={<TeacherBulkStudentsPage />}
+            />
           </Route>
         </Route>
 

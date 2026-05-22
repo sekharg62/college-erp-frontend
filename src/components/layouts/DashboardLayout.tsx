@@ -26,9 +26,9 @@ export type DashboardLayoutProps = {
   navItems: readonly DashboardNavItem[]
 }
 
-const SIDEBAR_COLLAPSED = '4.5rem'
-const SIDEBAR_EXPANDED = '16rem'
-const ICON_SLOT = '4.5rem'
+const SIDEBAR_COLLAPSED = '4rem'
+const SIDEBAR_EXPANDED = '15rem'
+const ICON_SLOT = '4rem'
 const HEADER_HEIGHT = '4rem'
 
 const getSidebarLinkClass = (isActive: boolean, theme: Theme) => {
@@ -189,15 +189,15 @@ export default function DashboardLayout({
           <Menu size={22} />
         </button>
 
-        <span className="text-lg font-bold tracking-tight text-amber-500">
+        {/* <span className="text-lg font-bold tracking-tight text-amber-500">
           MAAR
-        </span>
+        </span> */}
         <span className={`hidden text-xs font-medium uppercase sm:inline ${mutedClass}`}>
-          {portalLabel}
+          {portalLabel} Portal
         </span>
 
         <p className={`ml-auto hidden text-sm font-medium sm:block ${mutedClass}`}>
-          Welcome, {user?.name}
+          Welcome, <span className="text-amber-500 font-bold">{user?.name}</span>
         </p>
 
         <button
