@@ -1,6 +1,7 @@
 import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
 import { AdminAuthProvider } from './context/AdminAuthContext'
+import { StudentAuthProvider } from './context/StudentAuthContext'
 import { TeacherAuthProvider } from './context/TeacherAuthContext'
 import { ThemeProvider } from './context/ThemeContext'
 import './index.css'
@@ -11,7 +12,9 @@ createRoot(document.getElementById('root')!).render(
     <ThemeProvider>
       <AdminAuthProvider>
         <TeacherAuthProvider>
-          <App />
+          <StudentAuthProvider>
+            <App />
+          </StudentAuthProvider>
         </TeacherAuthProvider>
       </AdminAuthProvider>
     </ThemeProvider>

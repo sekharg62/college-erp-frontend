@@ -5,4 +5,7 @@ export const STORAGE_KEYS = {
   TEACHER_ACCESS_TOKEN: 'teacherAccessToken',
   TEACHER_TOKEN_TYPE: 'teacherTokenType',
   TEACHER_USER: 'teacherUser',
+  STUDENT_ACCESS_TOKEN: 'studentAccessToken',
+  STUDENT_TOKEN_TYPE: 'studentTokenType',
+  STUDENT_USER: 'studentUser',
 } as const

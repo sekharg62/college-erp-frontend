@@ -45,6 +45,20 @@ attachAuthInterceptor(
   () => localStorage.getItem(STORAGE_KEYS.TEACHER_TOKEN_TYPE) ?? 'Bearer',
 )
 
+const studentAxiosInstance = axios.create({
+  baseURL,
+  headers: {
+    'Content-Type': 'application/json',
+  },
+  withCredentials: true,
+})
+
+attachAuthInterceptor(
+  studentAxiosInstance,
+  () => localStorage.getItem(STORAGE_KEYS.STUDENT_ACCESS_TOKEN),
+  () => localStorage.getItem(STORAGE_KEYS.STUDENT_TOKEN_TYPE) ?? 'Bearer',
+)
+
 function createClient(instance: ReturnType<typeof axios.create>) {
   return {
     get: <T>(url: string, config?: AxiosRequestConfig) =>
@@ -66,5 +80,6 @@ function createClient(instance: ReturnType<typeof axios.create>) {
 
 export const apiClient = createClient(axiosInstance)
 export const teacherApiClient = createClient(teacherAxiosInstance)
+export const studentApiClient = createClient(studentAxiosInstance)
 
 export default apiClient

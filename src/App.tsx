@@ -3,6 +3,8 @@ import { Toaster } from 'sonner'
 import AdminProtectedRoute from './components/AdminProtectedRoute'
 import AdminDashboardLayout from './components/layouts/AdminDashboardLayout'
 import TeacherDashboardLayout from './components/layouts/TeacherDashboardLayout'
+import StudentDashboardLayout from './components/layouts/StudentDashboardLayout'
+import StudentProtectedRoute from './components/StudentProtectedRoute'
 import TeacherProtectedRoute from './components/TeacherProtectedRoute'
 import Nav from './components/Nav'
 import { useTheme } from './context/ThemeContext'
@@ -11,7 +13,8 @@ import AdminDepartmentPage from './pages/admin/AdminDepartmentPage'
 import AdminTeacherPage from './pages/admin/AdminTeacherPage'
 import AdminLoginPage from './pages/AdminLoginPage'
 import AdminPage from './pages/AdminPage'
-import StudentPage from './pages/StudentPage'
+import StudentLoginPage from './pages/StudentLoginPage'
+import StudentDashboardPage from './pages/student/StudentDashboardPage'
 import TeacherLoginPage from './pages/TeacherLoginPage'
 import TeacherDashboardPage from './pages/teacher/TeacherDashboardPage'
 import TeacherBulkStudentsPage from './pages/teacher/TeacherBulkStudentsPage'
@@ -23,14 +26,22 @@ function AppRoutes() {
     location.pathname.startsWith('/admin/dashboard') ||
     location.pathname === '/admin/login' ||
     location.pathname.startsWith('/teacher/dashboard') ||
-    location.pathname === '/teacher'
+    location.pathname === '/teacher' ||
+    location.pathname.startsWith('/student/dashboard') ||
+    location.pathname === '/student'
 
   return (
     <>
       {!hideNav && <Nav />}
       <Routes>
-        <Route path="/student" element={<StudentPage />} />
+        <Route path="/student" element={<StudentLoginPage />} />
         <Route path="/teacher" element={<TeacherLoginPage />} />
+
+        <Route element={<StudentProtectedRoute />}>
+          <Route element={<StudentDashboardLayout />}>
+            <Route path="/student/dashboard" element={<StudentDashboardPage />} />
+          </Route>
+        </Route>
         <Route path="/admin/login" element={<AdminLoginPage />} />
         <Route path="/admin" element={<AdminPage />} />
 
