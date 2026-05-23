@@ -1,21 +1,7 @@
 import axios, { type AxiosRequestConfig } from 'axios'
-import { STORAGE_KEYS } from '../constants'
+import { AUTH_STORAGE_KEYS } from '../constants/authStorage'
 
 const baseURL = `${import.meta.env.VITE_API_URL}/api`
-
-function attachAuthInterceptor(
-  instance: ReturnType<typeof axios.create>,
-  getToken: () => string | null,
-  getTokenType: () => string,
-) {
-  instance.interceptors.request.use((config) => {
-    const token = getToken()
-    if (token) {
-      config.headers.Authorization = `${getTokenType()} ${token}`
-    }
-    return config
-  })
-}
 
 const axiosInstance = axios.create({
   baseURL,
@@ -25,39 +11,14 @@ const axiosInstance = axios.create({
   withCredentials: true,
 })
 
-attachAuthInterceptor(
-  axiosInstance,
-  () => localStorage.getItem(STORAGE_KEYS.ACCESS_TOKEN),
-  () => localStorage.getItem(STORAGE_KEYS.TOKEN_TYPE) ?? 'Bearer',
-)
-
-const teacherAxiosInstance = axios.create({
-  baseURL,
-  headers: {
-    'Content-Type': 'application/json',
-  },
-  withCredentials: true,
+axiosInstance.interceptors.request.use((config) => {
+  const token = localStorage.getItem(AUTH_STORAGE_KEYS.accessToken)
+  const tokenType = localStorage.getItem(AUTH_STORAGE_KEYS.tokenType) ?? 'Bearer'
+  if (token) {
+    config.headers.Authorization = `${tokenType} ${token}`
+  }
+  return config
 })
-
-attachAuthInterceptor(
-  teacherAxiosInstance,
-  () => localStorage.getItem(STORAGE_KEYS.TEACHER_ACCESS_TOKEN),
-  () => localStorage.getItem(STORAGE_KEYS.TEACHER_TOKEN_TYPE) ?? 'Bearer',
-)
-
-const studentAxiosInstance = axios.create({
-  baseURL,
-  headers: {
-    'Content-Type': 'application/json',
-  },
-  withCredentials: true,
-})
-
-attachAuthInterceptor(
-  studentAxiosInstance,
-  () => localStorage.getItem(STORAGE_KEYS.STUDENT_ACCESS_TOKEN),
-  () => localStorage.getItem(STORAGE_KEYS.STUDENT_TOKEN_TYPE) ?? 'Bearer',
-)
 
 function createClient(instance: ReturnType<typeof axios.create>) {
   return {
@@ -78,8 +39,7 @@ function createClient(instance: ReturnType<typeof axios.create>) {
   }
 }
 
+/** Single API client — uses shared accessToken / tokenType from localStorage */
 export const apiClient = createClient(axiosInstance)
-export const teacherApiClient = createClient(teacherAxiosInstance)
-export const studentApiClient = createClient(studentAxiosInstance)
 
 export default apiClient

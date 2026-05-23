@@ -23,7 +23,11 @@ import StudentThirdYearPage from './pages/student/StudentThirdYearPage'
 import TeacherLoginPage from './pages/TeacherLoginPage'
 import TeacherDashboardPage from './pages/teacher/TeacherDashboardPage'
 import TeacherBulkStudentsPage from './pages/teacher/TeacherBulkStudentsPage'
+import TeacherFirstYearPage from './pages/teacher/TeacherFirstYearPage'
+import TeacherFourthYearPage from './pages/teacher/TeacherFourthYearPage'
+import TeacherSecondYearPage from './pages/teacher/TeacherSecondYearPage'
 import TeacherStudentsPage from './pages/teacher/TeacherStudentsPage'
+import TeacherThirdYearPage from './pages/teacher/TeacherThirdYearPage'
 
 function AppRoutes() {
   const location = useLocation()
@@ -73,6 +77,22 @@ function AppRoutes() {
         <Route element={<TeacherProtectedRoute />}>
           <Route element={<TeacherDashboardLayout />}>
             <Route path="/teacher/dashboard" element={<TeacherDashboardPage />} />
+            <Route
+              path="/teacher/dashboard/1st-year"
+              element={<TeacherFirstYearPage />}
+            />
+            <Route
+              path="/teacher/dashboard/2nd-year"
+              element={<TeacherSecondYearPage />}
+            />
+            <Route
+              path="/teacher/dashboard/3rd-year"
+              element={<TeacherThirdYearPage />}
+            />
+            <Route
+              path="/teacher/dashboard/4th-year"
+              element={<TeacherFourthYearPage />}
+            />
             <Route
               path="/teacher/dashboard/students"
               element={<TeacherStudentsPage />}

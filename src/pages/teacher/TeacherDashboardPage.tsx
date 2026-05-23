@@ -1,11 +1,18 @@
-import { Building2, GraduationCap, Phone, User } from 'lucide-react'
+import { Building2, BookOpen, GraduationCap, Phone, User } from 'lucide-react'
+import { Link } from 'react-router-dom'
 import { useTeacherAuth } from '../../context/TeacherAuthContext'
 import { useTheme } from '../../context/ThemeContext'
+
+const yearLinks = [
+  { to: '/teacher/dashboard/1st-year', label: '1st Year' },
+  { to: '/teacher/dashboard/2nd-year', label: '2nd Year' },
+  { to: '/teacher/dashboard/3rd-year', label: '3rd Year' },
+  { to: '/teacher/dashboard/4th-year', label: '4th Year' },
+] as const
 
 export default function TeacherDashboardPage() {
   const { theme } = useTheme()
   const { user } = useTeacherAuth()
-  console.log(user)
 
   const cardClass =
     theme === 'dark'
@@ -13,6 +20,11 @@ export default function TeacherDashboardPage() {
       : 'border-slate-200 bg-white'
 
   const mutedClass = theme === 'dark' ? 'text-slate-400' : 'text-slate-600'
+
+  const linkClass =
+    theme === 'dark'
+      ? 'border-slate-700 bg-slate-800/50 text-slate-200 hover:border-amber-500/40 hover:bg-amber-500/10'
+      : 'border-slate-200 bg-slate-50 text-slate-800 hover:border-amber-500/40 hover:bg-amber-500/10'
 
   const statCards = [
     {
@@ -56,7 +68,7 @@ export default function TeacherDashboardPage() {
         {statCards.map(({ label, value, icon: Icon, accent }) => (
           <div
             key={label}
-            className={`rounded-2xl border p-5 shadow-sm transition-colors ${cardClass}`}
+            className={`rounded-xl border p-5 shadow-sm transition-colors ${cardClass}`}
           >
             <div className="mb-3 flex items-center justify-between">
               <span className={`text-sm font-medium ${mutedClass}`}>{label}</span>
@@ -67,12 +79,23 @@ export default function TeacherDashboardPage() {
         ))}
       </div>
 
-      <div className={`mt-6 rounded-2xl border p-6 shadow-sm ${cardClass}`}>
-        <h2 className="text-lg font-semibold">Welcome</h2>
+      <div className={`mt-6 rounded-xl border p-6 shadow-sm ${cardClass}`}>
+        <h2 className="text-lg font-semibold">MAAR by year</h2>
         <p className={`mt-1 text-sm ${mutedClass}`}>
-          You are signed in to the teacher portal. More features will appear here
-          as they are added.
+          Review student activity submissions for each program year.
         </p>
+        <div className="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+          {yearLinks.map(({ to, label }) => (
+            <Link
+              key={to}
+              to={to}
+              className={`flex items-center gap-2 rounded-md border px-4 py-3 text-sm font-semibold transition-colors ${linkClass}`}
+            >
+              <BookOpen size={18} className="shrink-0 text-amber-500" />
+              {label}
+            </Link>
+          ))}
+        </div>
       </div>
     </div>
   )

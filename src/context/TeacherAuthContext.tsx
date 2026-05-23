@@ -6,83 +6,57 @@ import {
   useState,
   type ReactNode,
 } from 'react'
-import { STORAGE_KEYS } from '../constants'
 import {
   loginTeacher,
   type LoginTeacherInput,
   type Teacher,
 } from '../services/teacher'
+import {
+  clearAuthSession,
+  loadAuthSession,
+  saveAuthSession,
+  type AuthSession,
+  type StoredUser,
+} from '../utils/authStorage'
 
-type TeacherAuthState = {
-  accessToken: string
-  tokenType: string
-  teacher: Teacher
-}
+export type TeacherUser = StoredUser<Teacher>
 
 type TeacherAuthContextValue = {
-  user: Teacher | null
+  user: TeacherUser | null
   accessToken: string | null
   tokenType: string | null
   isAuthenticated: boolean
-  login: (input: LoginTeacherInput) => Promise<Teacher>
+  login: (input: LoginTeacherInput) => Promise<TeacherUser>
   logout: () => void
 }
 
 const TeacherAuthContext = createContext<TeacherAuthContextValue | null>(null)
 
-function loadStoredAuth(): TeacherAuthState | null {
-  const accessToken = localStorage.getItem(STORAGE_KEYS.TEACHER_ACCESS_TOKEN)
-  const tokenType = localStorage.getItem(STORAGE_KEYS.TEACHER_TOKEN_TYPE)
-  const teacherRaw = localStorage.getItem(STORAGE_KEYS.TEACHER_USER)
-
-  if (!accessToken || !tokenType || !teacherRaw) {
-    return null
-  }
-
-  try {
-    const teacher = JSON.parse(teacherRaw) as Teacher
-    return { accessToken, tokenType, teacher }
-  } catch {
-    clearStoredAuth()
-    return null
-  }
-}
-
-function saveAuth(auth: TeacherAuthState) {
-  localStorage.setItem(STORAGE_KEYS.TEACHER_ACCESS_TOKEN, auth.accessToken)
-  localStorage.setItem(STORAGE_KEYS.TEACHER_TOKEN_TYPE, auth.tokenType)
-  localStorage.setItem(STORAGE_KEYS.TEACHER_USER, JSON.stringify(auth.teacher))
-}
-
-function clearStoredAuth() {
-  localStorage.removeItem(STORAGE_KEYS.TEACHER_ACCESS_TOKEN)
-  localStorage.removeItem(STORAGE_KEYS.TEACHER_TOKEN_TYPE)
-  localStorage.removeItem(STORAGE_KEYS.TEACHER_USER)
-}
-
 export function TeacherAuthProvider({ children }: { children: ReactNode }) {
-  const [auth, setAuth] = useState<TeacherAuthState | null>(loadStoredAuth)
+  const [auth, setAuth] = useState<AuthSession<TeacherUser> | null>(() =>
+    loadAuthSession<TeacherUser>('TEACHER'),
+  )
 
   const login = useCallback(async (input: LoginTeacherInput) => {
     const response = await loginTeacher(input)
-    const nextAuth: TeacherAuthState = {
+    const nextAuth: AuthSession<TeacherUser> = {
       accessToken: response.accessToken,
       tokenType: response.tokenType,
-      teacher: response.teacher,
+      user: { ...response.teacher, role: 'TEACHER' },
     }
     setAuth(nextAuth)
-    saveAuth(nextAuth)
-    return response.teacher
+    saveAuthSession(nextAuth)
+    return nextAuth.user
   }, [])
 
   const logout = useCallback(() => {
     setAuth(null)
-    clearStoredAuth()
+    clearAuthSession()
   }, [])
 
   const value = useMemo<TeacherAuthContextValue>(
     () => ({
-      user: auth?.teacher ?? null,
+      user: auth?.user ?? null,
       accessToken: auth?.accessToken ?? null,
       tokenType: auth?.tokenType ?? null,
       isAuthenticated: Boolean(auth),

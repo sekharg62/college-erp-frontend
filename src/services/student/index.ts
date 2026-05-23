@@ -1,4 +1,4 @@
-import { apiClient, teacherApiClient } from '../index'
+import { apiClient } from '../index'
 
 const BASE = '/students'
 
@@ -40,6 +40,6 @@ export const loginStudent = (data: LoginStudentInput) =>
   apiClient.post<LoginStudentResponse>(`${BASE}/login`, data)
 
 export const createStudent = (data: CreateStudentInput) =>
-  teacherApiClient.post<Student>(BASE, data)
+  apiClient.post<Student>(BASE, data)
 
-export const getStudents = () => teacherApiClient.get<Student[]>(BASE)
+export const getStudents = () => apiClient.get<Student[]>(BASE)

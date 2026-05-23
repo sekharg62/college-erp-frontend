@@ -2,7 +2,7 @@ import type {
   AcademicYear,
   StudentActivitySubmissionStatusValue,
 } from '../../constants'
-import { studentApiClient } from '../index'
+import { apiClient } from '../index'
 
 const BASE = '/student-activity-submits'
 
@@ -38,15 +38,40 @@ export type CreateStudentActivitySubmitInput = {
 }
 
 export const getStudentActivitySubmits = (academicYear: AcademicYear) =>
-  studentApiClient.get<StudentActivitySubmit[]>(
+  apiClient.get<StudentActivitySubmit[]>(
     `${BASE}?academicYear=${encodeURIComponent(academicYear)}`,
+  )
+
+/** Student row from GET /student-activity-submits/students (teacher token) */
+export type TeacherStudentWithSubmissions = {
+  id: string
+  name: string
+  rollNo: string
+  admissionYear?: string | null
+  phoneNo?: string | null
+  activitySubmits?: StudentActivitySubmit[]
+  submits?: StudentActivitySubmit[]
+  submissions?: StudentActivitySubmit[]
+}
+
+export function getSubmissionsFromStudent(
+  student: TeacherStudentWithSubmissions,
+): StudentActivitySubmit[] {
+  return (
+    student.activitySubmits ?? student.submits ?? student.submissions ?? []
+  )
+}
+
+export const getTeacherStudentsActivitySubmits = (academicYear: AcademicYear) =>
+  apiClient.get<TeacherStudentWithSubmissions[]>(
+    `${BASE}/students?academicYear=${encodeURIComponent(academicYear)}`,
   )
 
 export const createStudentActivitySubmit = ({
   status = DEFAULT_STUDENT_ACTIVITY_SUBMIT_STATUS,
   ...data
 }: CreateStudentActivitySubmitInput) =>
-  studentApiClient.post<StudentActivitySubmit>(BASE, {
+  apiClient.post<StudentActivitySubmit>(BASE, {
     ...data,
     status,
   })
