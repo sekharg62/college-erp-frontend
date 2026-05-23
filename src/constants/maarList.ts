@@ -260,6 +260,7 @@ export const MAAR_ACTIVITIES: readonly MaarCategory[] = [
   {
     no: 15,
     title: 'Self-Entrepreneurship Programme',
+    categoryMaxPoints: 40,
     items: [
       {
         label: 'a',

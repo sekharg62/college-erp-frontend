@@ -42,7 +42,7 @@ const Input = forwardRef<HTMLInputElement, InputProps>(function Input(
         id={inputId}
         aria-invalid={error ? true : undefined}
         aria-describedby={[hintId, errorId].filter(Boolean).join(' ') || undefined}
-        className={`w-full rounded-lg border px-4 py-2.5 text-sm outline-none transition-colors focus:ring-2 disabled:cursor-not-allowed disabled:opacity-50 ${inputClass} ${
+        className={`w-full rounded-md border px-4 py-2.5 text-sm outline-none transition-colors focus:ring-2 disabled:cursor-not-allowed disabled:opacity-50 ${inputClass} ${
           error ? 'border-red-500 focus:border-red-500 focus:ring-red-500/25' : ''
         }`}
         {...props}

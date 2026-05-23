@@ -1,14 +1,9 @@
 import axios from 'axios'
-import {
-  ArrowLeft,
-  ArrowRight,
-  Building2,
-  Loader2,
-  UserPlus,
-} from 'lucide-react'
+import { ArrowLeft, ArrowRight, Building2, UserPlus } from 'lucide-react'
 import { type ChangeEvent, type FormEvent, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { toast } from 'sonner'
+import Button from '../components/uis/Button'
 import Input from '../components/uis/Input'
 import { useTheme } from '../context/ThemeContext'
 import { createAdmin, type CreateAdminInput } from '../services/Admin.service'
@@ -66,16 +61,6 @@ function AdminPage() {
 
   const subtitleClass =
     theme === 'dark' ? 'text-slate-400' : 'text-slate-600'
-
-  const primaryBtnClass =
-    theme === 'dark'
-      ? 'bg-amber-500 text-slate-950 hover:bg-amber-400'
-      : 'bg-amber-500 text-white hover:bg-amber-600'
-
-  const secondaryBtnClass =
-    theme === 'dark'
-      ? 'border-slate-700 text-slate-300 hover:bg-slate-800'
-      : 'border-slate-300 text-slate-700 hover:bg-slate-100'
 
   const linkClass =
     theme === 'dark'
@@ -243,23 +228,22 @@ function AdminPage() {
               required
             />
 
-            <button
+            <Button
               type="submit"
-              disabled={loading}
-              className={`mt-2 flex w-full items-center justify-center gap-2 rounded-xl px-4 py-3 text-sm font-semibold transition-colors disabled:cursor-not-allowed disabled:opacity-60 ${primaryBtnClass}`}
+              variant="primary"
+              loading={loading}
+              fullWidth
+              className="mt-2"
             >
               {loading ? (
-                <>
-                  <Loader2 size={18} className="animate-spin" />
-                  Creating institute…
-                </>
+                'Creating institute…'
               ) : (
                 <>
                   Next
-                  <ArrowRight size={18} />
+                  <ArrowRight size={18} className="shrink-0" />
                 </>
               )}
-            </button>
+            </Button>
 
             <p className={`text-center text-sm ${subtitleClass}`}>
               Already a member?{' '}
@@ -305,32 +289,25 @@ function AdminPage() {
             />
 
             <div className="mt-2 flex gap-3">
-              <button
+              <Button
                 type="button"
+                variant="cancel"
+                icon={ArrowLeft}
+                disabled={loading}
+                className="flex-1"
                 onClick={handleBack}
-                disabled={loading}
-                className={`flex flex-1 items-center justify-center gap-2 rounded-xl border px-4 py-3 text-sm font-semibold transition-colors disabled:cursor-not-allowed disabled:opacity-60 ${secondaryBtnClass}`}
               >
-                <ArrowLeft size={18} />
                 Back
-              </button>
-              <button
+              </Button>
+              <Button
                 type="submit"
-                disabled={loading}
-                className={`flex flex-1 items-center justify-center gap-2 rounded-xl px-4 py-3 text-sm font-semibold transition-colors disabled:cursor-not-allowed disabled:opacity-60 ${primaryBtnClass}`}
+                variant="primary"
+                icon={UserPlus}
+                loading={loading}
+                className="flex-1"
               >
-                {loading ? (
-                  <>
-                    <Loader2 size={18} className="animate-spin" />
-                    Creating…
-                  </>
-                ) : (
-                  <>
-                    <UserPlus size={18} />
-                    Create Admin
-                  </>
-                )}
-              </button>
+                {loading ? 'Creating…' : 'Create Admin'}
+              </Button>
             </div>
           </form>
         )}

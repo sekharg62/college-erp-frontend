@@ -1,8 +1,9 @@
 import axios from 'axios'
-import { Loader2, LogIn } from 'lucide-react'
+import { LogIn } from 'lucide-react'
 import { type ChangeEvent, type FormEvent, useState } from 'react'
 import { Navigate, useNavigate } from 'react-router-dom'
 import { toast } from 'sonner'
+import Button from '../components/uis/Button'
 import Input from '../components/uis/Input'
 import { useTeacherAuth } from '../context/TeacherAuthContext'
 import { useTheme } from '../context/ThemeContext'
@@ -46,11 +47,6 @@ export default function TeacherLoginPage() {
 
   const subtitleClass =
     theme === 'dark' ? 'text-slate-400' : 'text-slate-600'
-
-  const primaryBtnClass =
-    theme === 'dark'
-      ? 'bg-amber-500 text-slate-950 hover:bg-amber-400'
-      : 'bg-amber-500 text-white hover:bg-amber-600'
 
   const handleChange =
     (field: keyof LoginTeacherInput) => (e: ChangeEvent<HTMLInputElement>) => {
@@ -124,23 +120,16 @@ export default function TeacherLoginPage() {
             required
           />
 
-          <button
+          <Button
             type="submit"
-            disabled={loading}
-            className={`mt-2 flex w-full items-center justify-center gap-2 rounded-xl px-4 py-3 text-sm font-semibold transition-colors disabled:cursor-not-allowed disabled:opacity-60 ${primaryBtnClass}`}
+            variant="primary"
+            icon={LogIn}
+            loading={loading}
+            fullWidth
+            className="mt-2"
           >
-            {loading ? (
-              <>
-                <Loader2 size={18} className="animate-spin" />
-                Signing in…
-              </>
-            ) : (
-              <>
-                <LogIn size={18} />
-                Login
-              </>
-            )}
-          </button>
+            {loading ? 'Signing in…' : 'Login'}
+          </Button>
         </form>
       </div>
     </main>

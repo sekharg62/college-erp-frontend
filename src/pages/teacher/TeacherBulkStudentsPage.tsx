@@ -1,15 +1,9 @@
 import axios from 'axios'
-import {
-  ArrowLeft,
-  Download,
-  Loader2,
-  Trash2,
-  Upload,
-  Users,
-} from 'lucide-react'
+import { ArrowLeft, Download, Trash2, Upload, Users } from 'lucide-react'
 import { useRef, useState, type ChangeEvent } from 'react'
 import { Link } from 'react-router-dom'
 import { toast } from 'sonner'
+import Button from '../../components/uis/Button'
 import { useTeacherAuth } from '../../context/TeacherAuthContext'
 import { useTheme } from '../../context/ThemeContext'
 import { createStudent } from '../../services/student'
@@ -70,16 +64,6 @@ export default function TeacherBulkStudentsPage() {
       : 'border-slate-200 bg-white'
 
   const mutedClass = theme === 'dark' ? 'text-slate-400' : 'text-slate-600'
-
-  const primaryBtnClass =
-    theme === 'dark'
-      ? 'bg-amber-500 text-slate-950 hover:bg-amber-400'
-      : 'bg-amber-500 text-white hover:bg-amber-600'
-
-  const ghostBtnClass =
-    theme === 'dark'
-      ? 'border-slate-700 text-slate-300 hover:bg-slate-800'
-      : 'border-slate-300 text-slate-700 hover:bg-slate-100'
 
   const tableHeadClass =
     theme === 'dark' ? 'bg-slate-800/50 text-slate-400' : 'bg-slate-50 text-slate-600'
@@ -248,7 +232,7 @@ export default function TeacherBulkStudentsPage() {
 
         <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
           <div className="flex items-start gap-3">
-            <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-amber-500/15 text-amber-500">
+            <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-md bg-amber-500/15 text-amber-500">
               <Users size={22} />
             </div>
             <div>
@@ -264,15 +248,15 @@ export default function TeacherBulkStudentsPage() {
         </div>
       </div>
 
-      <div className={`mb-6 flex flex-wrap gap-3 rounded-2xl border p-4 shadow-sm ${cardClass}`}>
-        <button
+      <div className={`mb-6 flex flex-wrap gap-3 rounded-xl border p-4 shadow-sm ${cardClass}`}>
+        <Button
           type="button"
+          variant="secondary"
+          icon={Download}
           onClick={handleDownloadTemplate}
-          className={`inline-flex items-center gap-2 rounded-xl border px-4 py-2.5 text-sm font-semibold transition-colors ${ghostBtnClass}`}
         >
-          <Download size={18} />
           Download example CSV
-        </button>
+        </Button>
 
         <input
           ref={fileInputRef}
@@ -281,14 +265,14 @@ export default function TeacherBulkStudentsPage() {
           className="hidden"
           onChange={handleFileUpload}
         />
-        <button
+        <Button
           type="button"
+          variant="primary"
+          icon={Upload}
           onClick={() => fileInputRef.current?.click()}
-          className={`inline-flex items-center gap-2 rounded-xl px-4 py-2.5 text-sm font-semibold transition-colors ${primaryBtnClass}`}
         >
-          <Upload size={18} />
           Upload CSV
-        </button>
+        </Button>
 
         <p className={`w-full text-xs ${mutedClass}`}>
           Columns: name, rollNo, admissionYear, phoneNo, password. If password is empty,
@@ -298,7 +282,7 @@ export default function TeacherBulkStudentsPage() {
 
       {rows.length > 0 && (
         <>
-          <div className={`mb-6 overflow-hidden rounded-2xl border shadow-sm ${cardClass}`}>
+          <div className={`mb-6 overflow-hidden rounded-xl border shadow-sm ${cardClass}`}>
             <div className="overflow-x-auto">
               <table className="w-full min-w-[56rem] text-left text-sm">
                 <thead>
@@ -366,19 +350,16 @@ export default function TeacherBulkStudentsPage() {
                         )}
                       </td>
                       <td className="px-3 py-2 align-top text-right">
-                        <button
+                        <Button
                           type="button"
-                          onClick={() => removeRow(row.id)}
+                          variant="danger"
+                          icon={Trash2}
                           disabled={creating}
                           title="Remove row"
-                          className={`inline-flex h-9 w-9 items-center justify-center rounded-lg border transition-colors disabled:opacity-60 ${
-                            theme === 'dark'
-                              ? 'border-red-900/50 text-red-400 hover:bg-red-500/10'
-                              : 'border-red-200 text-red-600 hover:bg-red-50'
-                          }`}
-                        >
-                          <Trash2 size={16} />
-                        </button>
+                          aria-label="Remove row"
+                          className="!px-2.5 !py-2.5"
+                          onClick={() => removeRow(row.id)}
+                        />
                       </td>
                     </tr>
                   ))}
@@ -387,22 +368,18 @@ export default function TeacherBulkStudentsPage() {
             </div>
           </div>
 
-          <div className={`rounded-2xl border p-4 shadow-sm ${cardClass}`}>
-            <button
+          <div className={`rounded-xl border p-4 shadow-sm ${cardClass}`}>
+            <Button
               type="button"
+              variant="primary"
+              loading={creating}
+              disabled={rows.length === 0}
               onClick={() => void handleCreateAll()}
-              disabled={creating || rows.length === 0}
-              className={`inline-flex items-center gap-2 rounded-xl px-5 py-2.5 text-sm font-semibold transition-colors disabled:cursor-not-allowed disabled:opacity-60 ${primaryBtnClass}`}
             >
-              {creating ? (
-                <>
-                  <Loader2 size={18} className="animate-spin" />
-                  Creating {createProgress.done} of {createProgress.total}…
-                </>
-              ) : (
-                `Create ${rows.length} student(s)`
-              )}
-            </button>
+              {creating
+                ? `Creating ${createProgress.done} of ${createProgress.total}…`
+                : `Create ${rows.length} student(s)`}
+            </Button>
             <p className={`mt-2 text-xs ${mutedClass}`}>
               Each row is sent to the API one at a time. Fix or remove failed rows and
               run again for remaining students.
@@ -412,7 +389,7 @@ export default function TeacherBulkStudentsPage() {
       )}
 
       {rows.length === 0 && (
-        <div className={`rounded-2xl border py-16 text-center text-sm shadow-sm ${cardClass} ${mutedClass}`}>
+        <div className={`rounded-xl border py-16 text-center text-sm shadow-sm ${cardClass} ${mutedClass}`}>
           Download the template or upload a CSV to preview and edit students here.
         </div>
       )}
