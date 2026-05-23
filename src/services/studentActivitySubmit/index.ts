@@ -25,6 +25,19 @@ export type StudentActivitySubmit = {
   updatedAt: string
 }
 
+export type ActivitySubmitStudent = {
+  id: string
+  name: string
+  rollNo: string
+  phoneNo: string | null
+  admissionYear: string
+}
+
+/** Flat row from GET /student-activity-submits/students */
+export type TeacherActivitySubmitRow = StudentActivitySubmit & {
+  student: ActivitySubmitStudent
+}
+
 export type CreateStudentActivitySubmitInput = {
   activityId: string
   subActivityId: string
@@ -42,28 +55,8 @@ export const getStudentActivitySubmits = (academicYear: AcademicYear) =>
     `${BASE}?academicYear=${encodeURIComponent(academicYear)}`,
   )
 
-/** Student row from GET /student-activity-submits/students (teacher token) */
-export type TeacherStudentWithSubmissions = {
-  id: string
-  name: string
-  rollNo: string
-  admissionYear?: string | null
-  phoneNo?: string | null
-  activitySubmits?: StudentActivitySubmit[]
-  submits?: StudentActivitySubmit[]
-  submissions?: StudentActivitySubmit[]
-}
-
-export function getSubmissionsFromStudent(
-  student: TeacherStudentWithSubmissions,
-): StudentActivitySubmit[] {
-  return (
-    student.activitySubmits ?? student.submits ?? student.submissions ?? []
-  )
-}
-
 export const getTeacherStudentsActivitySubmits = (academicYear: AcademicYear) =>
-  apiClient.get<TeacherStudentWithSubmissions[]>(
+  apiClient.get<TeacherActivitySubmitRow[]>(
     `${BASE}/students?academicYear=${encodeURIComponent(academicYear)}`,
   )
 

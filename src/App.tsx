@@ -28,21 +28,20 @@ import TeacherFourthYearPage from './pages/teacher/TeacherFourthYearPage'
 import TeacherSecondYearPage from './pages/teacher/TeacherSecondYearPage'
 import TeacherStudentsPage from './pages/teacher/TeacherStudentsPage'
 import TeacherThirdYearPage from './pages/teacher/TeacherThirdYearPage'
+import HomePage from './pages/HomePage'
 
 function AppRoutes() {
   const location = useLocation()
   const hideNav =
     location.pathname.startsWith('/admin/dashboard') ||
-    location.pathname === '/admin/login' ||
     location.pathname.startsWith('/teacher/dashboard') ||
-    location.pathname === '/teacher' ||
-    location.pathname.startsWith('/student/dashboard') ||
-    location.pathname === '/student'
+    location.pathname.startsWith('/student/dashboard')
 
   return (
     <>
       {!hideNav && <Nav />}
       <Routes>
+        <Route path="/" element={<HomePage />} />
         <Route path="/student" element={<StudentLoginPage />} />
         <Route path="/teacher" element={<TeacherLoginPage />} />
 

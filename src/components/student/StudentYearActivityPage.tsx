@@ -664,7 +664,7 @@ export default function StudentYearActivityPage({
               )}
             </div> */}
 
-            <div className={`overflow-x-auto rounded-lg border ${tableRowClass}`}>
+            <div className={`overflow-x-auto rounded-sm border ${tableRowClass}`}>
               <table className="w-full text-left text-sm">
                 <thead>
                   <tr className={`border-b ${tableRowClass} ${stickyHeadClass}`}>

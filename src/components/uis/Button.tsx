@@ -9,6 +9,7 @@ type ButtonProps = ButtonHTMLAttributes<HTMLButtonElement> & {
   icon?: LucideIcon
   loading?: boolean
   fullWidth?: boolean
+  iconSize?: number
 }
 
 const Button = forwardRef<HTMLButtonElement, ButtonProps>(function Button(
@@ -21,6 +22,7 @@ const Button = forwardRef<HTMLButtonElement, ButtonProps>(function Button(
     children,
     disabled,
     type = 'button',
+    iconSize = 18,
     ...props
   },
   ref,
@@ -39,7 +41,7 @@ const Button = forwardRef<HTMLButtonElement, ButtonProps>(function Button(
       {loading ? (
         <Loader2 size={18} className="animate-spin" />
       ) : (
-        Icon && <Icon size={18} className="shrink-0" />
+        Icon && <Icon size={iconSize} className="shrink-0" />
       )}
       {children}
     </button>

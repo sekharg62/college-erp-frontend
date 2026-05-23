@@ -119,7 +119,7 @@ export default function DashboardLayout({
 
   const sidebarContent = (
     <>
-      <nav className="flex flex-1 flex-col gap-1 py-3">
+      <nav className="flex flex-1 flex-col gap-1 py-2">
         {navItems.map(({ to, label, icon: Icon, end = true }) => (
           <NavLink
             key={to}
@@ -128,7 +128,7 @@ export default function DashboardLayout({
             title={label}
             onClick={() => setMobileOpen(false)}
             className={({ isActive }) =>
-              `flex h-11 items-center overflow-hidden rounded-md text-sm font-medium transition-colors ${getSidebarLinkClass(isActive, theme)}`
+              `flex h-11 items-center overflow-hidden rounded text-sm font-medium transition-colors ${getSidebarLinkClass(isActive, theme)}`
             }
           >
             <SidebarIconSlot>

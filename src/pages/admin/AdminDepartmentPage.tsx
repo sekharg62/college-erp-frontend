@@ -1,15 +1,10 @@
 import axios from 'axios'
-import {
-  GraduationCap,
-  Loader2,
-  Pencil,
-  Plus,
-  Trash2,
-  X,
-} from 'lucide-react'
-import { useCallback, useEffect, useState, type FormEvent } from 'react'
+import { GraduationCap, Loader2, Pencil, Plus, Save, Trash2, X } from 'lucide-react'
+import { useCallback, useEffect, useMemo, useState, type FormEvent } from 'react'
 import { toast } from 'sonner'
+import Button from '../../components/uis/Button'
 import Input from '../../components/uis/Input'
+import TableListToolbar from '../../components/uis/TableListToolbar'
 import { useTheme } from '../../context/ThemeContext'
 import {
   createDepartment,
@@ -45,6 +40,7 @@ export default function AdminDepartmentPage() {
   const [showForm, setShowForm] = useState(false)
   const [editingId, setEditingId] = useState<string | null>(null)
   const [name, setName] = useState('')
+  const [searchQuery, setSearchQuery] = useState('')
 
   const cardClass =
     theme === 'dark'
@@ -52,16 +48,6 @@ export default function AdminDepartmentPage() {
       : 'border-slate-200 bg-white'
 
   const mutedClass = theme === 'dark' ? 'text-slate-400' : 'text-slate-600'
-
-  const primaryBtnClass =
-    theme === 'dark'
-      ? 'bg-amber-500 text-slate-950 hover:bg-amber-400'
-      : 'bg-amber-500 text-white hover:bg-amber-600'
-
-  const ghostBtnClass =
-    theme === 'dark'
-      ? 'border-slate-700 text-slate-300 hover:bg-slate-800'
-      : 'border-slate-300 text-slate-700 hover:bg-slate-100'
 
   const tableHeadClass =
     theme === 'dark' ? 'bg-slate-800/50 text-slate-400' : 'bg-slate-50 text-slate-600'
@@ -84,6 +70,16 @@ export default function AdminDepartmentPage() {
   useEffect(() => {
     void fetchDepartments()
   }, [fetchDepartments])
+
+  const filteredDepartments = useMemo(() => {
+    const query = searchQuery.trim().toLowerCase()
+    if (!query) return departments
+    return departments.filter((department) =>
+      department.name.toLowerCase().includes(query),
+    )
+  }, [departments, searchQuery])
+
+  const totalCount = departments.length
 
   const resetForm = () => {
     setName('')
@@ -168,31 +164,26 @@ export default function AdminDepartmentPage() {
         </div>
 
         {!showForm && (
-          <button
-            type="button"
-            onClick={openCreate}
-            className={`inline-flex items-center justify-center gap-2 rounded-xl px-4 py-2.5 text-sm font-semibold transition-colors ${primaryBtnClass}`}
-          >
-            <Plus size={18} />
+          <Button type="button" variant="primary" icon={Plus} onClick={openCreate}>
             Add Department
-          </button>
+          </Button>
         )}
       </div>
 
       {showForm && (
-        <div className={`mb-6 rounded-2xl border p-6 shadow-sm ${cardClass}`}>
+        <div className={`mb-6 rounded-md border p-6 shadow-sm ${cardClass}`}>
           <div className="mb-4 flex items-center justify-between">
             <h2 className="text-lg font-semibold">
               {editingId ? 'Edit Department' : 'New Department'}
             </h2>
-            <button
+            <Button
               type="button"
+              variant="cancel"
+              icon={X}
               onClick={resetForm}
               aria-label="Close form"
-              className={mutedClass}
-            >
-              <X size={20} />
-            </button>
+              className="!px-2.5"
+            />
           </div>
 
           <form onSubmit={handleSubmit} className="flex flex-col gap-4 sm:flex-row sm:items-end">
@@ -208,94 +199,102 @@ export default function AdminDepartmentPage() {
               />
             </div>
             <div className="flex gap-2">
-              <button
+              <Button
                 type="button"
+                variant="cancel"
+                icon={X}
                 onClick={resetForm}
                 disabled={submitting}
-                className={`rounded-xl border px-4 py-2.5 text-sm font-semibold transition-colors disabled:opacity-60 ${ghostBtnClass}`}
               >
                 Cancel
-              </button>
-              <button
+              </Button>
+              <Button
                 type="submit"
-                disabled={submitting}
-                className={`inline-flex items-center gap-2 rounded-xl px-4 py-2.5 text-sm font-semibold transition-colors disabled:opacity-60 ${primaryBtnClass}`}
+                variant="primary"
+                icon={editingId ? Save : Plus}
+                loading={submitting}
               >
-                {submitting ? (
-                  <>
-                    <Loader2 size={18} className="animate-spin" />
-                    Saving…
-                  </>
-                ) : editingId ? (
-                  'Update'
-                ) : (
-                  'Create'
-                )}
-              </button>
+                {editingId ? 'Update' : 'Create'}
+              </Button>
             </div>
           </form>
         </div>
       )}
 
-      <div className={`overflow-hidden rounded-2xl border shadow-sm ${cardClass}`}>
+      <div className={`overflow-hidden rounded-md border shadow-sm ${cardClass}`}>
         {loading ? (
           <div className={`flex items-center justify-center gap-2 py-16 ${mutedClass}`}>
-            <Loader2 size={22} className="animate-spin" />
+            <Loader2 size={22} className="animate-spin text-amber-500" />
             Loading departments…
           </div>
-        ) : departments.length === 0 ? (
-          <div className={`py-16 text-center text-sm ${mutedClass}`}>
-            No departments yet. Click &quot;Add Department&quot; to create one.
-          </div>
         ) : (
-          <div className="overflow-x-auto">
-            <table className="w-full min-w-[32rem] text-left text-sm">
-              <thead>
-                <tr className={`border-b ${tableRowClass} ${tableHeadClass}`}>
-                  <th className="px-4 py-3 font-medium">Name</th>
-                  <th className="px-4 py-3 font-medium">Created</th>
-                  <th className="px-4 py-3 text-right font-medium">Actions</th>
-                </tr>
-              </thead>
-              <tbody>
-                {departments.map((department) => (
-                  <tr
-                    key={department.id}
-                    className={`border-b last:border-b-0 ${tableRowClass}`}
-                  >
-                    <td className="px-4 py-3 font-medium">{department.name}</td>
-                    <td className={`px-4 py-3 ${mutedClass}`}>
-                      {formatDate(department.createdAt)}
-                    </td>
-                    <td className="px-4 py-3">
-                      <div className="flex justify-end gap-2">
-                        <button
-                          type="button"
-                          onClick={() => openEdit(department)}
-                          title="Edit"
-                          className={`inline-flex h-9 w-9 items-center justify-center rounded-lg border transition-colors ${ghostBtnClass}`}
-                        >
-                          <Pencil size={16} />
-                        </button>
-                        <button
-                          type="button"
-                          onClick={() => void handleDelete(department)}
-                          title="Delete"
-                          className={`inline-flex h-9 w-9 items-center justify-center rounded-lg border transition-colors ${
-                            theme === 'dark'
-                              ? 'border-red-900/50 text-red-400 hover:bg-red-500/10'
-                              : 'border-red-200 text-red-600 hover:bg-red-50'
-                          }`}
-                        >
-                          <Trash2 size={16} />
-                        </button>
-                      </div>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
+          <>
+            <TableListToolbar
+              totalCount={totalCount}
+              filteredCount={filteredDepartments.length}
+              itemLabel="department"
+              searchQuery={searchQuery}
+              onSearchChange={setSearchQuery}
+              searchPlaceholder="Search departments…"
+            />
+
+            {totalCount === 0 ? (
+              <div className={`py-16 text-center text-sm ${mutedClass}`}>
+                No departments yet. Click &quot;Add Department&quot; to create one.
+              </div>
+            ) : filteredDepartments.length === 0 ? (
+              <div className={`py-16 text-center text-sm ${mutedClass}`}>
+                No departments match your search.
+              </div>
+            ) : (
+              <div className="overflow-x-auto">
+                <table className="w-full min-w-[32rem] text-left text-sm">
+                  <thead>
+                    <tr className={`border-b ${tableRowClass} ${tableHeadClass}`}>
+                      <th className="px-4 py-3 font-semibold">Name</th>
+                      <th className="px-4 py-3 font-semibold">Created</th>
+                      <th className="px-4 py-3 text-right font-semibold">Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {filteredDepartments.map((department) => (
+                      <tr
+                        key={department.id}
+                        className={`border-b last:border-b-0 ${tableRowClass}`}
+                      >
+                        <td className="px-4 py-3 font-medium">{department.name}</td>
+                        <td className={`px-4 py-3 ${mutedClass}`}>
+                          {formatDate(department.createdAt)}
+                        </td>
+                        <td className="px-4 py-3">
+                          <div className="flex justify-end gap-2">
+                            <Button
+                              type="button"
+                              variant="secondary"
+                              icon={Pencil}
+                              onClick={() => openEdit(department)}
+                              title="Edit"
+                              aria-label="Edit department"
+                              className="!h-9 !w-9 !px-0"
+                            />
+                            <Button
+                              type="button"
+                              variant="danger"
+                              icon={Trash2}
+                              onClick={() => void handleDelete(department)}
+                              title="Delete"
+                              aria-label="Delete department"
+                              className="!h-9 !w-9 !px-0"
+                            />
+                          </div>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            )}
+          </>
         )}
       </div>
     </div>

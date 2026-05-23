@@ -1,15 +1,11 @@
 import axios from 'axios'
-import {
-  Loader2,
-  Pencil,
-  Plus,
-  Trash2,
-  Users,
-  X,
-} from 'lucide-react'
-import { useCallback, useEffect, useState, type FormEvent } from 'react'
+import { Loader2, Pencil, Plus, Save, Trash2, Users, X } from 'lucide-react'
+import { useCallback, useEffect, useMemo, useState, type FormEvent } from 'react'
 import { toast } from 'sonner'
+import Button from '../../components/uis/Button'
+import CustomDropdown from '../../components/uis/CustomDropdown'
 import Input from '../../components/uis/Input'
+import TableListToolbar from '../../components/uis/TableListToolbar'
 import { useAdminAuth } from '../../context/AdminAuthContext'
 import { useTheme } from '../../context/ThemeContext'
 import { getDepartments, type Department } from '../../services/Department.service'
@@ -63,6 +59,7 @@ export default function AdminTeacherPage() {
   const [showForm, setShowForm] = useState(false)
   const [editingId, setEditingId] = useState<string | null>(null)
   const [form, setForm] = useState<TeacherFormState>(emptyForm)
+  const [searchQuery, setSearchQuery] = useState('')
 
   const cardClass =
     theme === 'dark'
@@ -71,28 +68,11 @@ export default function AdminTeacherPage() {
 
   const mutedClass = theme === 'dark' ? 'text-slate-400' : 'text-slate-600'
 
-  const primaryBtnClass =
-    theme === 'dark'
-      ? 'bg-amber-500 text-slate-950 hover:bg-amber-400'
-      : 'bg-amber-500 text-white hover:bg-amber-600'
-
-  const ghostBtnClass =
-    theme === 'dark'
-      ? 'border-slate-700 text-slate-300 hover:bg-slate-800'
-      : 'border-slate-300 text-slate-700 hover:bg-slate-100'
-
   const tableHeadClass =
     theme === 'dark' ? 'bg-slate-800/50 text-slate-400' : 'bg-slate-50 text-slate-600'
 
   const tableRowClass =
     theme === 'dark' ? 'border-slate-800' : 'border-slate-200'
-
-  const selectClass =
-    theme === 'dark'
-      ? 'border-slate-700 bg-slate-950/60 text-slate-100 focus:border-violet-500 focus:ring-violet-500/25'
-      : 'border-slate-300 bg-white text-slate-900 focus:border-violet-500 focus:ring-violet-500/20'
-
-  const labelClass = theme === 'dark' ? 'text-slate-300' : 'text-slate-700'
 
   const departmentNameById = useCallback(
     (id: string) => departments.find((d) => d.id === id)?.name ?? id,
@@ -120,6 +100,31 @@ export default function AdminTeacherPage() {
   useEffect(() => {
     void fetchData()
   }, [fetchData])
+
+  const filteredTeachers = useMemo(() => {
+    const query = searchQuery.trim().toLowerCase()
+    if (!query) return teachers
+
+    return teachers.filter((teacher) => {
+      const departmentName = departmentNameById(teacher.departmentId).toLowerCase()
+      return (
+        teacher.name.toLowerCase().includes(query) ||
+        teacher.phoneNo.toLowerCase().includes(query) ||
+        departmentName.includes(query)
+      )
+    })
+  }, [teachers, searchQuery, departmentNameById])
+
+  const totalCount = teachers.length
+
+  const departmentOptions = useMemo(
+    () =>
+      departments.map((department) => ({
+        value: department.id,
+        label: department.name,
+      })),
+    [departments],
+  )
 
   const resetForm = () => {
     setForm(emptyForm)
@@ -249,15 +254,15 @@ export default function AdminTeacherPage() {
         </div>
 
         {!showForm && (
-          <button
+          <Button
             type="button"
+            variant="primary"
+            icon={Plus}
             onClick={openCreate}
             disabled={departments.length === 0 && !loading}
-            className={`inline-flex items-center justify-center gap-2 rounded-xl px-4 py-2.5 text-sm font-semibold transition-colors disabled:opacity-60 ${primaryBtnClass}`}
           >
-            <Plus size={18} />
             Add Teacher
-          </button>
+          </Button>
         )}
       </div>
 
@@ -268,43 +273,34 @@ export default function AdminTeacherPage() {
       )}
 
       {showForm && (
-        <div className={`mb-6 rounded-2xl border p-6 shadow-sm ${cardClass}`}>
+        <div className={`mb-6 rounded-md border p-6 shadow-sm ${cardClass}`}>
           <div className="mb-4 flex items-center justify-between">
             <h2 className="text-lg font-semibold">
               {editingId ? 'Edit Teacher' : 'New Teacher'}
             </h2>
-            <button
+            <Button
               type="button"
+              variant="cancel"
+              icon={X}
               onClick={resetForm}
               aria-label="Close form"
-              className={mutedClass}
-            >
-              <X size={20} />
-            </button>
+              className="!px-2.5"
+            />
           </div>
 
           <form onSubmit={handleSubmit} className="grid gap-4 sm:grid-cols-2">
-            <div className="flex flex-col gap-1.5 sm:col-span-2">
-              <label htmlFor="departmentId" className={`text-sm font-medium ${labelClass}`}>
-                Department
-              </label>
-              <select
-                id="departmentId"
-                name="departmentId"
-                value={form.departmentId}
-                onChange={(e) => updateField('departmentId', e.target.value)}
-                disabled={submitting || departments.length === 0}
-                required
-                className={`w-full rounded-lg border px-4 py-2.5 text-sm outline-none transition-colors focus:ring-2 disabled:cursor-not-allowed disabled:opacity-50 ${selectClass}`}
-              >
-                <option value="">Select department</option>
-                {departments.map((department) => (
-                  <option key={department.id} value={department.id}>
-                    {department.name}
-                  </option>
-                ))}
-              </select>
-            </div>
+            <CustomDropdown
+              id="departmentId"
+              label="Department"
+              value={form.departmentId}
+              onChange={(departmentId) => updateField('departmentId', departmentId)}
+              options={departmentOptions}
+              placeholder="Select department"
+              searchPlaceholder="Search departments…"
+              emptyMessage="No departments yet. Create one first."
+              disabled={submitting || departments.length === 0}
+              required
+            />
 
             <Input
               label="Full name"
@@ -328,7 +324,6 @@ export default function AdminTeacherPage() {
             />
 
             <Input
-              className="sm:col-span-2"
               label={editingId ? 'New password (optional)' : 'Password'}
               name="password"
               type="password"
@@ -341,100 +336,108 @@ export default function AdminTeacherPage() {
             />
 
             <div className="flex gap-2 sm:col-span-2 sm:justify-end">
-              <button
+              <Button
                 type="button"
+                variant="cancel"
+                icon={X}
                 onClick={resetForm}
                 disabled={submitting}
-                className={`rounded-xl border px-4 py-2.5 text-sm font-semibold transition-colors disabled:opacity-60 ${ghostBtnClass}`}
               >
                 Cancel
-              </button>
-              <button
+              </Button>
+              <Button
                 type="submit"
-                disabled={submitting}
-                className={`inline-flex items-center gap-2 rounded-xl px-4 py-2.5 text-sm font-semibold transition-colors disabled:opacity-60 ${primaryBtnClass}`}
+                variant="primary"
+                icon={editingId ? Save : Plus}
+                loading={submitting}
               >
-                {submitting ? (
-                  <>
-                    <Loader2 size={18} className="animate-spin" />
-                    Saving…
-                  </>
-                ) : editingId ? (
-                  'Update'
-                ) : (
-                  'Create'
-                )}
-              </button>
+                {editingId ? 'Update' : 'Create'}
+              </Button>
             </div>
           </form>
         </div>
       )}
 
-      <div className={`overflow-hidden rounded-2xl border shadow-sm ${cardClass}`}>
+      <div className={`overflow-hidden rounded-md border shadow-sm ${cardClass}`}>
         {loading ? (
           <div className={`flex items-center justify-center gap-2 py-16 ${mutedClass}`}>
-            <Loader2 size={22} className="animate-spin" />
+            <Loader2 size={22} className="animate-spin text-amber-500" />
             Loading teachers…
           </div>
-        ) : teachers.length === 0 ? (
-          <div className={`py-16 text-center text-sm ${mutedClass}`}>
-            No teachers yet. Click &quot;Add Teacher&quot; to create one.
-          </div>
         ) : (
-          <div className="overflow-x-auto">
-            <table className="w-full min-w-[40rem] text-left text-sm">
-              <thead>
-                <tr className={`border-b ${tableRowClass} ${tableHeadClass}`}>
-                  <th className="px-4 py-3 font-medium">Name</th>
-                  <th className="px-4 py-3 font-medium">Phone</th>
-                  <th className="px-4 py-3 font-medium">Department</th>
-                  <th className="px-4 py-3 font-medium">Created</th>
-                  <th className="px-4 py-3 text-right font-medium">Actions</th>
-                </tr>
-              </thead>
-              <tbody>
-                {teachers.map((teacher) => (
-                  <tr
-                    key={teacher.id}
-                    className={`border-b last:border-b-0 ${tableRowClass}`}
-                  >
-                    <td className="px-4 py-3 font-medium">{teacher.name}</td>
-                    <td className={`px-4 py-3 ${mutedClass}`}>{teacher.phoneNo}</td>
-                    <td className={`px-4 py-3 ${mutedClass}`}>
-                      {departmentNameById(teacher.departmentId)}
-                    </td>
-                    <td className={`px-4 py-3 ${mutedClass}`}>
-                      {formatDate(teacher.createdAt)}
-                    </td>
-                    <td className="px-4 py-3">
-                      <div className="flex justify-end gap-2">
-                        <button
-                          type="button"
-                          onClick={() => openEdit(teacher)}
-                          title="Edit"
-                          className={`inline-flex h-9 w-9 items-center justify-center rounded-lg border transition-colors ${ghostBtnClass}`}
-                        >
-                          <Pencil size={16} />
-                        </button>
-                        <button
-                          type="button"
-                          onClick={() => void handleDelete(teacher)}
-                          title="Delete"
-                          className={`inline-flex h-9 w-9 items-center justify-center rounded-lg border transition-colors ${
-                            theme === 'dark'
-                              ? 'border-red-900/50 text-red-400 hover:bg-red-500/10'
-                              : 'border-red-200 text-red-600 hover:bg-red-50'
-                          }`}
-                        >
-                          <Trash2 size={16} />
-                        </button>
-                      </div>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
+          <>
+            <TableListToolbar
+              totalCount={totalCount}
+              filteredCount={filteredTeachers.length}
+              itemLabel="teacher"
+              searchQuery={searchQuery}
+              onSearchChange={setSearchQuery}
+              searchPlaceholder="Search name, phone, department…"
+            />
+
+            {totalCount === 0 ? (
+              <div className={`py-16 text-center text-sm ${mutedClass}`}>
+                No teachers yet. Click &quot;Add Teacher&quot; to create one.
+              </div>
+            ) : filteredTeachers.length === 0 ? (
+              <div className={`py-16 text-center text-sm ${mutedClass}`}>
+                No teachers match your search.
+              </div>
+            ) : (
+              <div className="overflow-x-auto">
+                <table className="w-full min-w-[40rem] text-left text-sm">
+                  <thead>
+                    <tr className={`border-b ${tableRowClass} ${tableHeadClass}`}>
+                      <th className="px-4 py-3 font-semibold">Name</th>
+                      <th className="px-4 py-3 font-semibold">Phone</th>
+                      <th className="px-4 py-3 font-semibold">Department</th>
+                      <th className="px-4 py-3 font-semibold">Created</th>
+                      <th className="px-4 py-3 text-right font-semibold">Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {filteredTeachers.map((teacher) => (
+                      <tr
+                        key={teacher.id}
+                        className={`border-b last:border-b-0 ${tableRowClass}`}
+                      >
+                        <td className="px-4 py-3 font-medium">{teacher.name}</td>
+                        <td className={`px-4 py-3 ${mutedClass}`}>{teacher.phoneNo}</td>
+                        <td className={`px-4 py-3 ${mutedClass}`}>
+                          {departmentNameById(teacher.departmentId)}
+                        </td>
+                        <td className={`px-4 py-3 ${mutedClass}`}>
+                          {formatDate(teacher.createdAt)}
+                        </td>
+                        <td className="px-4 py-3">
+                          <div className="flex justify-end gap-2">
+                            <Button
+                              type="button"
+                              variant="secondary"
+                              icon={Pencil}
+                              onClick={() => openEdit(teacher)}
+                              title="Edit"
+                              aria-label="Edit teacher"
+                              className="h-9! w-9! px-0!"
+                            />
+                            <Button
+                              type="button"
+                              variant="danger"
+                              icon={Trash2}
+                              onClick={() => void handleDelete(teacher)}
+                              title="Delete"
+                              aria-label="Delete teacher"
+                              className="h-9! w-9! px-0!"
+                            />
+                          </div>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            )}
+          </>
         )}
       </div>
     </div>

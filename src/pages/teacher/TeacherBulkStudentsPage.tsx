@@ -221,30 +221,25 @@ export default function TeacherBulkStudentsPage() {
 
   return (
     <div className="mx-auto max-w-6xl">
-      <div className="mb-6">
+      <div className="mb-4">
         <Link
           to="/teacher/dashboard/students"
-          className={`mb-4 inline-flex items-center gap-2 text-sm font-medium transition-colors hover:text-amber-500 ${mutedClass}`}
+          className={`mb-3 inline-flex items-center gap-2 text-sm font-medium transition-colors hover:text-amber-500 ${mutedClass}`}
         >
           <ArrowLeft size={16} />
           Back to students
         </Link>
 
-        <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
-          <div className="flex items-start gap-3">
-            <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-md bg-amber-500/15 text-amber-500">
-              <Users size={22} />
-            </div>
-            <div>
-              <h1 className="text-2xl font-semibold tracking-tight sm:text-3xl">
-                Bulk add students
-              </h1>
-              <p className={`mt-1 text-sm ${mutedClass}`}>
-                Download the CSV template, fill it locally, upload, review rows, then
-                create students one by one.
-              </p>
-            </div>
+        <div className="flex items-center gap-2">
+          <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-amber-500/15 text-amber-500">
+            <Users size={16} aria-hidden />
           </div>
+          <h1 className="text-base font-semibold tracking-tight sm:text-lg">
+            Bulk add students
+          </h1>
+          <span className={`hidden text-xs lg:inline ${mutedClass}`}>
+            Download CSV template, upload, review, then create students
+          </span>
         </div>
       </div>
 

@@ -67,3 +67,26 @@ export const patchTeacher = (id: string, data: PatchTeacherInput) =>
 
 export const deleteTeacher = (id: string) =>
   apiClient.delete<Teacher>(`${BASE}/${id}`)
+
+export type TeacherDashboardEntity = {
+  id: string
+  name: string
+}
+
+export type TeacherDashboardTeacher = {
+  id: string
+  name: string
+  phoneNo: string
+  instituteId: string
+  adminId: string
+  institute: TeacherDashboardEntity
+  admin: TeacherDashboardEntity
+  department: TeacherDashboardEntity
+}
+
+export type TeacherDashboardResponse = {
+  teacher: TeacherDashboardTeacher
+}
+
+export const getTeacherDashboard = () =>
+  apiClient.get<TeacherDashboardResponse>(`${BASE}/dashboard`)

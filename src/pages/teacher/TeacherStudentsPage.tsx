@@ -153,19 +153,17 @@ export default function TeacherStudentsPage() {
 
   return (
     <div className="mx-auto max-w-5xl">
-      <div className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-        <div className="flex items-start gap-3">
-          <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-amber-500/15 text-amber-500">
-            <GraduationCap size={22} />
+      <div className="mb-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+        <div className="flex min-w-0 items-center gap-2">
+          <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-amber-500/15 text-amber-500">
+            <GraduationCap size={16} aria-hidden />
           </div>
-          <div>
-            <h1 className="text-2xl font-semibold tracking-tight sm:text-3xl">
-              Students
-            </h1>
-            <p className={`mt-1 text-sm ${mutedClass}`}>
-              Create and view students assigned to you.
-            </p>
-          </div>
+          <h1 className="text-base font-semibold tracking-tight sm:text-lg">
+            Students
+          </h1>
+          <span className={`hidden text-xs sm:inline ${mutedClass}`}>
+            Create and view students assigned to you
+          </span>
         </div>
 
         {!showForm && (
