@@ -68,3 +68,10 @@ export const createStudentActivitySubmit = ({
     ...data,
     status,
   })
+
+export type ApproveStudentActivitySubmitsInput = {
+  ids: string[]
+}
+
+export const approveStudentActivitySubmits = (data: ApproveStudentActivitySubmitsInput) =>
+  apiClient.post(`${BASE}/approve`, data)

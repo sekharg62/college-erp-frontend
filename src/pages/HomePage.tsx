@@ -213,67 +213,7 @@ export default function HomePage() {
       </section>
 
       {/* Route guide */}
-      <section className="mx-auto max-w-3xl px-4 py-14 sm:px-6">
-        <div className={`rounded-xl border p-6 shadow-sm sm:p-8 ${cardClass}`}>
-          <div className="mb-4 flex items-center gap-2">
-            <LayoutDashboard size={20} className="text-violet-500" />
-            <h2 className="text-lg font-semibold">Quick navigation</h2>
-          </div>
-          <p className={`mb-6 text-sm ${mutedClass}`}>
-            After login, each role has its own dashboard. Bookmark these paths:
-          </p>
-          <div className="overflow-x-auto">
-            <table className="w-full text-left text-sm">
-              <thead>
-                <tr
-                  className={`border-b ${
-                    theme === 'dark' ? 'border-slate-700 text-slate-400' : 'border-slate-200 text-slate-600'
-                  }`}
-                >
-                  <th className="pb-3 pr-4 font-semibold">Role</th>
-                  <th className="pb-3 pr-4 font-semibold">Login</th>
-                  <th className="pb-3 font-semibold">Dashboard</th>
-                </tr>
-              </thead>
-              <tbody className={mutedClass}>
-                {portals.map((portal) => (
-                  <tr
-                    key={portal.id}
-                    className={`border-b last:border-b-0 ${
-                      theme === 'dark' ? 'border-slate-800' : 'border-slate-100'
-                    }`}
-                  >
-                    <td className="py-3 pr-4 font-medium text-slate-900 dark:text-slate-100">
-                      {portal.title}
-                    </td>
-                    <td className="py-3 pr-4">
-                      <Link
-                        to={portal.loginPath}
-                        className="font-mono text-xs text-violet-600 hover:underline dark:text-violet-400"
-                      >
-                        {portal.loginPath}
-                      </Link>
-                    </td>
-                    <td className="py-3">
-                      <Link
-                        to={portal.dashboardPath}
-                        className="font-mono text-xs text-violet-600 hover:underline dark:text-violet-400"
-                      >
-                        {portal.dashboardPath}
-                      </Link>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-          <p className={`mt-6 flex items-start gap-2 text-xs ${mutedClass}`}>
-            <BookOpen size={14} className="mt-0.5 shrink-0 text-amber-500" />
-            Students can also open the MAAR activity list from their dashboard after
-            signing in.
-          </p>
-        </div>
-      </section>
+      
 
       <footer
         className={`border-t px-4 py-8 text-center text-xs ${mutedClass} ${

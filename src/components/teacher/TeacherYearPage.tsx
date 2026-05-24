@@ -1,6 +1,6 @@
 import type { AcademicYear } from '../../constants'
 import { BookOpen } from 'lucide-react'
-import { useEffect, useMemo, useState } from 'react'
+import { useCallback, useEffect, useMemo, useState } from 'react'
 import { toast } from 'sonner'
 import TeacherStudentActivityList from './TeacherStudentActivityList'
 import TeacherStudentSubmissionsToolbar from './TeacherStudentSubmissionsToolbar'
@@ -33,31 +33,21 @@ export default function TeacherYearPage({
     setSearchQuery('')
   }, [academicYear])
 
-  useEffect(() => {
-    let cancelled = false
-
-    async function load() {
-      setLoading(true)
-      try {
-        const data = await getTeacherStudentsActivitySubmits(academicYear)
-        if (!cancelled) setRows(data)
-      } catch (error) {
-        if (!cancelled) {
-          toast.error(
-            getErrorMessage(error, 'Failed to load student submissions'),
-          )
-        }
-      } finally {
-        if (!cancelled) setLoading(false)
-      }
-    }
-
-    void load()
-
-    return () => {
-      cancelled = true
+  const fetchSubmissions = useCallback(async (options?: { silent?: boolean }) => {
+    if (!options?.silent) setLoading(true)
+    try {
+      const data = await getTeacherStudentsActivitySubmits(academicYear)
+      setRows(data)
+    } catch (error) {
+      toast.error(getErrorMessage(error, 'Failed to load student submissions'))
+    } finally {
+      if (!options?.silent) setLoading(false)
     }
   }, [academicYear])
+
+  useEffect(() => {
+    void fetchSubmissions()
+  }, [fetchSubmissions])
 
   const students = useMemo(
     () => groupActivitySubmissionsByStudent(rows ?? []),
@@ -96,6 +86,7 @@ export default function TeacherYearPage({
           <TeacherStudentActivityList
             layout="table"
             students={filteredStudents}
+            onApproved={() => fetchSubmissions({ silent: true })}
             emptyMessage={
               searchQuery.trim()
                 ? 'No students match your search.'

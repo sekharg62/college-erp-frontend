@@ -1,11 +1,15 @@
 import { CheckCircle2, ChevronDown, Trash2 } from 'lucide-react'
 import { Fragment, useCallback, useState, type MouseEvent } from 'react'
+import { toast } from 'sonner'
+import { ExpandablePanel } from '../uis/ExpandableSection'
 import CopyBox from '../uis/CopyBox'
 import ActivityWhatsAppButton from '../uis/ActivityWhatsAppButton'
 import Button from '../uis/Button'
 import ProofUrlField from '../uis/ProofUrlField'
 import StatusBadge from '../uis/StatusBadge'
 import { useTheme } from '../../context/ThemeContext'
+import { approveStudentActivitySubmits } from '../../services/studentActivitySubmit'
+import { getErrorMessage } from '../../utils/getErrorMessage'
 import { getStudentOverallSubmissionStatus } from '../../utils/getStudentOverallSubmissionStatus'
 import type { GroupedStudentWithActivities } from '../../utils/groupActivitySubmissionsByStudent'
 
@@ -15,7 +19,8 @@ type TeacherStudentActivityListProps = {
   /** Table with header row (year pages); default accordion-style rows */
   layout?: 'table' | 'accordion'
   className?: string
-  onApproveSelected?: (activityIds: string[]) => void
+  /** Called after activities are approved successfully (e.g. refetch list) */
+  onApproved?: () => void | Promise<void>
 }
 
 type ActivityDetailsPanelProps = {
@@ -24,6 +29,7 @@ type ActivityDetailsPanelProps = {
   selectedActivityIds: string[]
   onToggleActivity: (activityId: string, checked: boolean) => void
   onApproveSelected: () => void
+  approving: boolean
   tableHeadClass: string
   tableRowClass: string
   mutedClass: string
@@ -35,6 +41,7 @@ function ActivityDetailsPanel({
   selectedActivityIds,
   onToggleActivity,
   onApproveSelected,
+  approving,
   tableHeadClass,
   tableRowClass,
   mutedClass,
@@ -125,12 +132,15 @@ function ActivityDetailsPanel({
       <div className="mt-3 flex justify-end px-2 pb-1">
         <Button
           type="button"
-          variant="primary"
+          variant="success"
           icon={CheckCircle2}
-          disabled={selectedCount === 0}
+          loading={approving}
+          disabled={selectedCount === 0 || approving}
           onClick={onApproveSelected}
         >
-          Approve{selectedCount > 0 ? ` (${selectedCount})` : ''}
+          {approving
+            ? 'Approving…'
+            : `Approve${selectedCount > 0 ? ` (${selectedCount})` : ''}`}
         </Button>
       </div>
     </div>
@@ -142,11 +152,12 @@ export default function TeacherStudentActivityList({
   emptyMessage = 'No student submissions yet.',
   layout = 'accordion',
   className = '',
-  onApproveSelected,
+  onApproved,
 }: TeacherStudentActivityListProps) {
   const { theme } = useTheme()
   const [expandedId, setExpandedId] = useState<string | null>(null)
   const [selectedActivityIds, setSelectedActivityIds] = useState<string[]>([])
+  const [approving, setApproving] = useState(false)
 
   const cardClass =
     theme === 'dark'
@@ -170,15 +181,31 @@ export default function TeacherStudentActivityList({
     })
   }, [])
 
-  const handleApproveSelected = useCallback(() => {
-    console.log('Selected activity ids:', selectedActivityIds)
-    onApproveSelected?.(selectedActivityIds)
-  }, [onApproveSelected, selectedActivityIds])
+  const handleApproveSelected = useCallback(async () => {
+    if (selectedActivityIds.length === 0) return
+
+    setApproving(true)
+    try {
+      await approveStudentActivitySubmits({ ids: selectedActivityIds })
+      toast.success(
+        selectedActivityIds.length === 1
+          ? 'Activity approved'
+          : `${selectedActivityIds.length} activities approved`,
+      )
+      setSelectedActivityIds([])
+      await onApproved?.()
+    } catch (error) {
+      toast.error(getErrorMessage(error, 'Failed to approve activities'))
+    } finally {
+      setApproving(false)
+    }
+  }, [onApproved, selectedActivityIds])
 
   const activityPanelProps = {
     selectedActivityIds,
     onToggleActivity: toggleActivitySelection,
-    onApproveSelected: handleApproveSelected,
+    onApproveSelected: () => void handleApproveSelected(),
+    approving,
     tableHeadClass,
     tableRowClass,
     mutedClass,
@@ -229,7 +256,7 @@ export default function TeacherStudentActivityList({
                 return (
                   <Fragment key={student.id}>
                     <tr
-                      className={`border-b cursor-pointer transition-colors hover:bg-amber-500/5 ${tableRowClass} ${
+                      className={`border-b cursor-pointer transition-colors duration-300 hover:bg-amber-500/5 ${tableRowClass} ${
                         isOpen
                           ? theme === 'dark'
                             ? 'bg-amber-500/10'
@@ -243,7 +270,7 @@ export default function TeacherStudentActivityList({
                       <td className="px-2 py-3">
                         <ChevronDown
                           size={16}
-                          className={`text-amber-500 transition-transform ${isOpen ? 'rotate-180' : ''}`}
+                          className={`text-amber-500 transition-transform duration-300 ease-in-out ${isOpen ? 'rotate-180' : ''}`}
                         />
                       </td>
                       <td className="px-3 py-3 font-medium">{student.name}</td>
@@ -264,16 +291,21 @@ export default function TeacherStudentActivityList({
                         <StatusBadge status={overallStatus} />
                       </td>
                     </tr>
-                    {isOpen && (
-                      <tr className={tableRowClass}>
-                        <td colSpan={8} className="border-b bg-slate-500/5 px-2 py-2">
-                          <ActivityDetailsPanel
-                            student={student}
-                            {...activityPanelProps}
-                          />
-                        </td>
-                      </tr>
-                    )}
+                    <tr className={tableRowClass}>
+                      <td colSpan={8} className="p-0">
+                        <ExpandablePanel
+                          open={isOpen}
+                          className="bg-slate-500/5"
+                        >
+                          <div className="border-b px-2 py-2">
+                            <ActivityDetailsPanel
+                              student={student}
+                              {...activityPanelProps}
+                            />
+                          </div>
+                        </ExpandablePanel>
+                      </td>
+                    </tr>
                   </Fragment>
                 )
               })}
@@ -303,13 +335,13 @@ export default function TeacherStudentActivityList({
                 onClick={() =>
                   setExpandedId(isOpen ? null : student.id)
                 }
-                className={`flex w-full flex-wrap items-center gap-x-4 gap-y-2 px-4 py-3 text-left transition-colors hover:bg-amber-500/5 ${
+                className={`flex w-full flex-wrap items-center gap-x-4 gap-y-2 px-4 py-3 text-left transition-colors duration-300 hover:bg-amber-500/5 ${
                   theme === 'dark' ? 'hover:bg-amber-500/10' : ''
                 }`}
               >
                 <ChevronDown
                   size={18}
-                  className={`shrink-0 text-amber-500 transition-transform ${isOpen ? 'rotate-180' : ''}`}
+                  className={`shrink-0 text-amber-500 transition-transform duration-300 ease-in-out ${isOpen ? 'rotate-180' : ''}`}
                 />
                 <div className="min-w-0 flex-1 grid gap-2 sm:grid-cols-2 lg:grid-cols-4">
                   <div>
@@ -343,7 +375,7 @@ export default function TeacherStudentActivityList({
                 </p>
               </button>
 
-              {isOpen && (
+              <ExpandablePanel open={isOpen} >
                 <div className="overflow-x-auto border-t px-2 pb-3">
                   <ActivityDetailsPanel
                     student={student}
@@ -351,7 +383,7 @@ export default function TeacherStudentActivityList({
                     {...activityPanelProps}
                   />
                 </div>
-              )}
+              </ExpandablePanel>
             </div>
           )
         })}

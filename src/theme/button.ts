@@ -1,6 +1,6 @@
 import type { Theme } from '../context/ThemeContext'
 
-export type ButtonVariant = 'primary' | 'secondary' | 'danger' | 'cancel'
+export type ButtonVariant = 'primary' | 'secondary' | 'danger' | 'cancel' | 'success'
 
 export function getButtonVariantClass(theme: Theme, variant: ButtonVariant) {
   const variants: Record<ButtonVariant, { dark: string; light: string }> = {
@@ -20,6 +20,10 @@ export function getButtonVariantClass(theme: Theme, variant: ButtonVariant) {
       dark: 'border border-slate-700 text-slate-300 hover:bg-slate-800',
       light: 'border border-slate-300 text-slate-600 hover:bg-slate-100',
     },
+    success:{
+      dark: 'bg-green-600 text-white hover:bg-green-500',
+      light: 'bg-green-600 text-white hover:bg-green-700',
+    }
   }
 
   return theme === 'dark' ? variants[variant].dark : variants[variant].light
