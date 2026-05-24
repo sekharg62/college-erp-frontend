@@ -11,6 +11,7 @@ export type Teacher = {
   phoneNo: string
   createdAt: string
   updatedAt: string
+  signature: string
 }
 
 export type LoginTeacherInput = {
@@ -34,17 +35,19 @@ export type CreateTeacherInput = {
 }
 
 export type UpdateTeacherInput = {
-  departmentId: string
-  name: string
-  phoneNo: string
-  password: string
+  departmentId?: string
+  name?: string
+  phoneNo?: string
+  password?: string
+  signature: string
 }
 
 export type PatchTeacherInput = Partial<{
-  departmentId: string
-  name: string
-  phoneNo: string
-  password: string
+  departmentId?: string
+  name?: string
+  phoneNo?: string
+  password?: string
+  signature: string
 }>
 
 export const loginTeacher = (data: LoginTeacherInput) =>

@@ -1,4 +1,10 @@
-import { BookOpen, GraduationCap, LayoutDashboard, Upload } from 'lucide-react'
+import {
+  BookOpen,
+  GraduationCap,
+  LayoutDashboard,
+  Settings,
+  Upload,
+} from 'lucide-react'
 import { useTeacherAuth } from '../../context/TeacherAuthContext'
 import DashboardLayout, { type DashboardNavItem } from './DashboardLayout'
 
@@ -43,6 +49,12 @@ const navItems: readonly DashboardNavItem[] = [
     to: '/teacher/dashboard/students/bulk',
     label: 'Bulk add',
     icon: Upload,
+    end: true,
+  },
+  {
+    to: '/teacher/dashboard/settings',
+    label: 'Settings',
+    icon: Settings,
     end: true,
   },
 ]

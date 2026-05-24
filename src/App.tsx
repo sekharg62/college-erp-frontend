@@ -27,6 +27,7 @@ import TeacherFirstYearPage from './pages/teacher/TeacherFirstYearPage'
 import TeacherFourthYearPage from './pages/teacher/TeacherFourthYearPage'
 import TeacherSecondYearPage from './pages/teacher/TeacherSecondYearPage'
 import TeacherStudentsPage from './pages/teacher/TeacherStudentsPage'
+import TeacherSettingsPage from './pages/teacher/TeacherSettingsPage'
 import TeacherThirdYearPage from './pages/teacher/TeacherThirdYearPage'
 import HomePage from './pages/HomePage'
 
@@ -99,6 +100,10 @@ function AppRoutes() {
             <Route
               path="/teacher/dashboard/students/bulk"
               element={<TeacherBulkStudentsPage />}
+            />
+            <Route
+              path="/teacher/dashboard/settings"
+              element={<TeacherSettingsPage />}
             />
           </Route>
         </Route>

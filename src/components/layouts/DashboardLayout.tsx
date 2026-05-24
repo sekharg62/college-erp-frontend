@@ -1,14 +1,9 @@
 import type { LucideIcon } from 'lucide-react'
-import {
-  LogOut,
-  Menu,
-  Moon,
-  Sun,
-  X,
-} from 'lucide-react'
+import { LogOut, Menu, X } from 'lucide-react'
 import { useState, type CSSProperties, type ReactNode } from 'react'
 import { NavLink, Outlet, useNavigate } from 'react-router-dom'
 import { toast } from 'sonner'
+import ThemeToggle from '../uis/ThemeToggle'
 import { useTheme, type Theme } from '../../context/ThemeContext'
 
 export type DashboardNavItem = {
@@ -80,7 +75,7 @@ export default function DashboardLayout({
   loginPath,
   navItems,
 }: DashboardLayoutProps) {
-  const { theme, toggleTheme } = useTheme()
+  const { theme } = useTheme()
   const navigate = useNavigate()
   const [mobileOpen, setMobileOpen] = useState(false)
 
@@ -200,20 +195,7 @@ export default function DashboardLayout({
           Welcome, <span className="text-amber-500 font-bold">{user?.name}</span>
         </p>
 
-        <button
-          type="button"
-          onClick={toggleTheme}
-          aria-label={
-            theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'
-          }
-          className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-lg transition-colors ${
-            theme === 'dark'
-              ? 'text-slate-400 hover:bg-slate-800'
-              : 'text-slate-600 hover:bg-slate-100'
-          }`}
-        >
-          {theme === 'dark' ? <Sun size={20} /> : <Moon size={20} />}
-        </button>
+        <ThemeToggle variant="icon" />
       </header>
 
       <div className="relative flex min-h-[calc(100vh-var(--header-height))] flex-1">

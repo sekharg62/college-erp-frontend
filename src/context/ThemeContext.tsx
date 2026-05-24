@@ -11,6 +11,7 @@ export type Theme = 'light' | 'dark'
 
 type ThemeContextValue = {
   theme: Theme
+  setTheme: (theme: Theme) => void
   toggleTheme: () => void
 }
 
@@ -32,12 +33,16 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
     localStorage.setItem(STORAGE_KEY, theme)
   }, [theme])
 
+  const setThemeValue = useCallback((next: Theme) => {
+    setTheme(next)
+  }, [])
+
   const toggleTheme = useCallback(() => {
     setTheme((current) => (current === 'dark' ? 'light' : 'dark'))
   }, [])
 
   return (
-    <ThemeContext.Provider value={{ theme, toggleTheme }}>
+    <ThemeContext.Provider value={{ theme, setTheme: setThemeValue, toggleTheme }}>
       {children}
     </ThemeContext.Provider>
   )
