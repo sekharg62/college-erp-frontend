@@ -19,6 +19,7 @@ import StudentFirstYearPage from './pages/student/StudentFirstYearPage'
 import StudentFourthYearPage from './pages/student/StudentFourthYearPage'
 import StudentSecondYearPage from './pages/student/StudentSecondYearPage'
 import MaarListPage from './pages/student/MaarListPage'
+import StudentSettingsPage from './pages/student/StudentSettingsPage'
 import StudentThirdYearPage from './pages/student/StudentThirdYearPage'
 import TeacherLoginPage from './pages/TeacherLoginPage'
 import TeacherDashboardPage from './pages/teacher/TeacherDashboardPage'
@@ -68,6 +69,10 @@ function AppRoutes() {
             <Route
               path="/student/dashboard/maar-list"
               element={<MaarListPage />}
+            />
+            <Route
+              path="/student/dashboard/settings"
+              element={<StudentSettingsPage />}
             />
           </Route>
         </Route>

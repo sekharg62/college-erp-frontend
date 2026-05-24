@@ -1,4 +1,4 @@
-import { CheckCircle2, ChevronDown, Trash2 } from 'lucide-react'
+import { CheckCircle2, ChevronDown, Download, Loader2, Trash2 } from 'lucide-react'
 import { Fragment, useCallback, useState, type MouseEvent } from 'react'
 import { toast } from 'sonner'
 import { ExpandablePanel } from '../uis/ExpandableSection'
@@ -9,6 +9,7 @@ import ProofUrlField from '../uis/ProofUrlField'
 import StatusBadge from '../uis/StatusBadge'
 import { useTheme } from '../../context/ThemeContext'
 import { approveStudentActivitySubmits } from '../../services/studentActivitySubmit'
+import { downloadStudentActivityReportPdf } from '../../utils/studentActivityReportPdf/downloadStudentActivityReportPdf'
 import { getErrorMessage } from '../../utils/getErrorMessage'
 import { getStudentOverallSubmissionStatus } from '../../utils/getStudentOverallSubmissionStatus'
 import type { GroupedStudentWithActivities } from '../../utils/groupActivitySubmissionsByStudent'
@@ -21,6 +22,8 @@ type TeacherStudentActivityListProps = {
   className?: string
   /** Called after activities are approved successfully (e.g. refetch list) */
   onApproved?: () => void | Promise<void>
+  /** Shown on PDF report header (e.g. "1st Year") */
+  reportYearLabel?: string
 }
 
 type ActivityDetailsPanelProps = {
@@ -153,11 +156,13 @@ export default function TeacherStudentActivityList({
   layout = 'accordion',
   className = '',
   onApproved,
+  reportYearLabel,
 }: TeacherStudentActivityListProps) {
   const { theme } = useTheme()
   const [expandedId, setExpandedId] = useState<string | null>(null)
   const [selectedActivityIds, setSelectedActivityIds] = useState<string[]>([])
   const [approving, setApproving] = useState(false)
+  const [downloadingStudentId, setDownloadingStudentId] = useState<string | null>(null)
 
   const cardClass =
     theme === 'dark'
@@ -201,6 +206,22 @@ export default function TeacherStudentActivityList({
     }
   }, [onApproved, selectedActivityIds])
 
+  const handleDownloadReport = useCallback(
+    async (event: MouseEvent<HTMLButtonElement>, student: GroupedStudentWithActivities) => {
+      event.stopPropagation()
+      setDownloadingStudentId(student.id)
+      try {
+        await downloadStudentActivityReportPdf(student, { yearLabel: reportYearLabel })
+        toast.success(`Report downloaded for ${student.name}`)
+      } catch (error) {
+        toast.error(getErrorMessage(error, 'Failed to generate report'))
+      } finally {
+        setDownloadingStudentId(null)
+      }
+    },
+    [reportYearLabel],
+  )
+
   const activityPanelProps = {
     selectedActivityIds,
     onToggleActivity: toggleActivitySelection,
@@ -240,6 +261,7 @@ export default function TeacherStudentActivityList({
                 </th>
                 <th className="px-3 py-3 text-center font-semibold">Total points</th>
                 <th className="px-3 py-3 font-semibold">Status</th>
+                <th className="px-3 py-3 font-semibold">Download</th>
               </tr>
             </thead>
             <tbody>
@@ -290,9 +312,29 @@ export default function TeacherStudentActivityList({
                       <td className="px-3 py-3">
                         <StatusBadge status={overallStatus} />
                       </td>
+                      <td className="px-3 py-3 text-center">
+                        <button
+                          type="button"
+                          title="Download activity report"
+                          aria-label={`Download report for ${student.name}`}
+                          disabled={downloadingStudentId === student.id}
+                          onClick={(event) => void handleDownloadReport(event, student)}
+                          className={`inline-flex h-8 w-8 items-center justify-center rounded-md transition-colors disabled:opacity-50 ${
+                            theme === 'dark'
+                              ? 'text-amber-400 hover:bg-amber-500/15'
+                              : 'text-amber-600 hover:bg-amber-500/10'
+                          }`}
+                        >
+                          {downloadingStudentId === student.id ? (
+                            <Loader2 size={16} className="animate-spin" />
+                          ) : (
+                            <Download size={16} />
+                          )}
+                        </button>
+                      </td>
                     </tr>
                     <tr className={tableRowClass}>
-                      <td colSpan={8} className="p-0">
+                      <td colSpan={9} className="p-0">
                         <ExpandablePanel
                           open={isOpen}
                           className="bg-slate-500/5"

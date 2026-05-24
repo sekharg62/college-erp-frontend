@@ -92,7 +92,6 @@ export default function TeacherDashboardPage() {
         if (!cancelled) setLoading(false)
       }
     }
-
     void load()
 
     return () => {

@@ -1,4 +1,4 @@
-import { BookOpen, LayoutDashboard, List } from 'lucide-react'
+import { BookOpen, LayoutDashboard, List, Settings } from 'lucide-react'
 import { useStudentAuth } from '../../context/StudentAuthContext'
 import DashboardLayout, { type DashboardNavItem } from './DashboardLayout'
 
@@ -37,6 +37,12 @@ const navItems: readonly DashboardNavItem[] = [
     to: '/student/dashboard/maar-list',
     label: 'MAAR List',
     icon: List,
+    end: true,
+  },
+  {
+    to: '/student/dashboard/settings',
+    label: 'Settings',
+    icon: Settings,
     end: true,
   },
 ]

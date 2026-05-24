@@ -31,6 +31,7 @@ export type ActivitySubmitStudent = {
   rollNo: string
   phoneNo: string | null
   admissionYear: string
+  signature?: string | null
 }
 
 /** Flat row from GET /student-activity-submits/students */

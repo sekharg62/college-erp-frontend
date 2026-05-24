@@ -28,6 +28,7 @@ type StudentAuthContextValue = {
   isAuthenticated: boolean
   login: (input: LoginStudentInput) => Promise<StudentUser>
   logout: () => void
+  updateUser: (patch: Partial<Student>) => void
 }
 
 const StudentAuthContext = createContext<StudentAuthContextValue | null>(null)
@@ -54,6 +55,18 @@ export function StudentAuthProvider({ children }: { children: ReactNode }) {
     clearAuthSession()
   }, [])
 
+  const updateUser = useCallback((patch: Partial<Student>) => {
+    setAuth((current) => {
+      if (!current) return null
+      const next: AuthSession<StudentUser> = {
+        ...current,
+        user: { ...current.user, ...patch },
+      }
+      saveAuthSession(next)
+      return next
+    })
+  }, [])
+
   const value = useMemo<StudentAuthContextValue>(
     () => ({
       user: auth?.user ?? null,
@@ -62,8 +75,9 @@ export function StudentAuthProvider({ children }: { children: ReactNode }) {
       isAuthenticated: Boolean(auth),
       login,
       logout,
+      updateUser,
     }),
-    [auth, login, logout],
+    [auth, login, logout, updateUser],
   )
 
   return (

@@ -1,4 +1,5 @@
-import { Search } from 'lucide-react'
+import { Download, Search } from 'lucide-react'
+import Button from '../uis/Button'
 import { useTheme } from '../../context/ThemeContext'
 
 type TeacherStudentSubmissionsToolbarProps = {
@@ -6,6 +7,8 @@ type TeacherStudentSubmissionsToolbarProps = {
   filteredStudents: number
   searchQuery: string
   onSearchChange: (value: string) => void
+  onExportAllPdf?: () => void
+  exportingAllPdf?: boolean
   className?: string
 }
 
@@ -14,6 +17,8 @@ export default function TeacherStudentSubmissionsToolbar({
   filteredStudents,
   searchQuery,
   onSearchChange,
+  onExportAllPdf,
+  exportingAllPdf = false,
   className = '',
 }: TeacherStudentSubmissionsToolbarProps) {
   const { theme } = useTheme()
@@ -51,20 +56,35 @@ export default function TeacherStudentSubmissionsToolbar({
         student{totalStudents === 1 ? '' : 's'} submitted
       </p>
 
-      <div className="relative w-full sm:max-w-md">
-        <Search
-          size={16}
-          className={`pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 ${mutedClass}`}
-          aria-hidden
-        />
-        <input
-          type="search"
-          value={searchQuery}
-          onChange={(event) => onSearchChange(event.target.value)}
-          placeholder="Search name, phone, roll no, activity…"
-          className={`w-full rounded-md border py-2 pl-9 pr-3 text-sm outline-none transition-colors focus:ring-2 ${inputClass}`}
-          aria-label="Search students"
-        />
+      <div className="flex w-full flex-col gap-2 sm:max-w-xl sm:flex-row sm:items-center">
+        <div className="relative min-w-0 flex-1">
+          <Search
+            size={16}
+            className={`pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 ${mutedClass}`}
+            aria-hidden
+          />
+          <input
+            type="search"
+            value={searchQuery}
+            onChange={(event) => onSearchChange(event.target.value)}
+            placeholder="Search name, phone, roll no, activity…"
+            className={`w-full rounded-md border py-2 pl-9 pr-3 text-sm outline-none transition-colors focus:ring-2 ${inputClass}`}
+            aria-label="Search students"
+          />
+        </div>
+        {onExportAllPdf && (
+          <Button
+            type="button"
+            variant="secondary"
+            icon={Download}
+            loading={exportingAllPdf}
+            disabled={exportingAllPdf || filteredStudents === 0}
+            onClick={onExportAllPdf}
+            className="shrink-0 whitespace-nowrap"
+          >
+            Export all PDF
+          </Button>
+        )}
       </div>
     </div>
   )

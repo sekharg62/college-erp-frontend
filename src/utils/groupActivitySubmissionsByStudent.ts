@@ -9,6 +9,7 @@ export type GroupedStudentWithActivities = {
   rollNo: string
   phoneNo: string | null
   admissionYear: string
+  signature?: string | null
   activities: StudentActivitySubmit[]
 }
 
@@ -33,6 +34,7 @@ export function groupActivitySubmissionsByStudent(
         rollNo: student.rollNo,
         phoneNo: student.phoneNo,
         admissionYear: student.admissionYear,
+        signature: student.signature,
         activities: [activity],
       })
     }

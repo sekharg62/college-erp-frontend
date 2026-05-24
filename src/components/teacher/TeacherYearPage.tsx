@@ -6,7 +6,9 @@ import TeacherStudentActivityList from './TeacherStudentActivityList'
 import TeacherStudentSubmissionsToolbar from './TeacherStudentSubmissionsToolbar'
 import TeacherYearPageSkeleton from './TeacherYearPageSkeleton'
 import { getTeacherStudentsActivitySubmits } from '../../services/studentActivitySubmit'
+import { useTeacherAuth } from '../../context/TeacherAuthContext'
 import { useTheme } from '../../context/ThemeContext'
+import { downloadAllStudentsActivityReportPdf } from '../../utils/studentActivityReportPdf/downloadAllStudentsActivityReportPdf'
 import { filterGroupedStudentsBySearch } from '../../utils/filterGroupedStudentsBySearch'
 import { getErrorMessage } from '../../utils/getErrorMessage'
 import { groupActivitySubmissionsByStudent } from '../../utils/groupActivitySubmissionsByStudent'
@@ -21,7 +23,9 @@ export default function TeacherYearPage({
   academicYear,
 }: TeacherYearPageProps) {
   const { theme } = useTheme()
+  const { user } = useTeacherAuth()
   const [loading, setLoading] = useState(true)
+  const [exportingAllPdf, setExportingAllPdf] = useState(false)
   const [searchQuery, setSearchQuery] = useState('')
   const [rows, setRows] = useState<Awaited<
     ReturnType<typeof getTeacherStudentsActivitySubmits>
@@ -59,6 +63,26 @@ export default function TeacherYearPage({
     [students, searchQuery],
   )
 
+  const handleExportAllPdf = useCallback(async () => {
+    if (filteredStudents.length === 0) {
+      toast.error('No students to export')
+      return
+    }
+
+    setExportingAllPdf(true)
+    try {
+      await downloadAllStudentsActivityReportPdf(filteredStudents, {
+        yearLabel: yearTitle,
+        teacherSignature: user?.signature ?? null,
+      })
+      toast.success('All students report downloaded')
+    } catch (error) {
+      toast.error(getErrorMessage(error, 'Failed to export reports'))
+    } finally {
+      setExportingAllPdf(false)
+    }
+  }, [filteredStudents, yearTitle, user?.signature])
+
   return (
     <div className="mx-auto max-w-6xl">
       <div className="mb-4 flex shrink-0 items-center gap-2">
@@ -82,10 +106,13 @@ export default function TeacherYearPage({
             filteredStudents={filteredStudents.length}
             searchQuery={searchQuery}
             onSearchChange={setSearchQuery}
+            onExportAllPdf={() => void handleExportAllPdf()}
+            exportingAllPdf={exportingAllPdf}
           />
           <TeacherStudentActivityList
             layout="table"
             students={filteredStudents}
+            reportYearLabel={yearTitle}
             onApproved={() => fetchSubmissions({ silent: true })}
             emptyMessage={
               searchQuery.trim()
