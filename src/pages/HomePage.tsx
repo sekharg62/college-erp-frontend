@@ -1,9 +1,7 @@
 import {
   ArrowRight,
-  BookOpen,
   CheckCircle2,
   GraduationCap,
-  LayoutDashboard,
   Shield,
   Upload,
   Users,

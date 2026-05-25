@@ -135,12 +135,10 @@ export function downloadMaarListPdf(filename = 'maar-list.pdf') {
       }
     },
     showHead: 'everyPage',
-    didDrawPage: (data) => {
-      if (data.pageNumber === data.pageCount) {
-        drawLastPageFooter(data.doc, generatedAt)
-      }
-    },
   })
+
+  doc.setPage(doc.getNumberOfPages())
+  drawLastPageFooter(doc, generatedAt)
 
   doc.save(filename)
 }

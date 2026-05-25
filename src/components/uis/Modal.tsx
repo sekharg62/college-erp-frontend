@@ -62,7 +62,7 @@ export default function Modal({
   const headerClass =
     theme === 'dark' ? 'border-slate-800' : 'border-slate-200'
 
-  const mutedClass = theme === 'dark' ? 'text-slate-400' : 'text-slate-500'
+  //const mutedClass = theme === 'dark' ? 'text-slate-400' : 'text-slate-500'
 
   const closeBtnClass =
     theme === 'dark'
