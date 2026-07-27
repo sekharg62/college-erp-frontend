@@ -209,7 +209,7 @@ export default function DashboardLayout({
         )}
 
         <aside
-          className={`group/sidebar fixed top-(--header-height) bottom-0 left-0 z-30 flex flex-col overflow-hidden border-r transition-[width] duration-300 ease-in-out ${sidebarClass} ${
+          className={`group/sidebar fixed top-(--header-height) bottom-0 left-0 z-50 flex flex-col overflow-hidden border-r transition-[width] duration-300 ease-in-out ${sidebarClass} ${
             mobileOpen
               ? 'w-64 translate-x-0'
               : 'w-64 -translate-x-full lg:w-(--sidebar-collapsed) lg:translate-x-0 lg:hover:w-(--sidebar-expanded)'

@@ -46,7 +46,7 @@ const emptyForm: CreateDepartmentInput = {
   slug: '',
 }
 
-export default function AdminDepartmentPage() {
+export default function SuperAdminDepartmentPage() {
   const { theme } = useTheme()
   const [departments, setDepartments] = useState<Department[]>([])
   const [loading, setLoading] = useState(true)
@@ -199,7 +199,7 @@ export default function AdminDepartmentPage() {
     <div className="mx-auto max-w-6xl">
       <div className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div className="flex items-start gap-3">
-          <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-amber-500/15 text-amber-500">
+          <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-rose-500/15 text-rose-500">
             <GraduationCap size={22} />
           </div>
           <div>
@@ -207,7 +207,7 @@ export default function AdminDepartmentPage() {
               Departments
             </h1>
             <p className={`mt-1 text-sm ${mutedClass}`}>
-              Create, edit, and manage departments.
+              Manage department name, code, and slug.
             </p>
           </div>
         </div>
@@ -293,7 +293,7 @@ export default function AdminDepartmentPage() {
       <div className={`overflow-hidden rounded-md border shadow-sm ${cardClass}`}>
         {loading ? (
           <div className={`flex items-center justify-center gap-2 py-16 ${mutedClass}`}>
-            <Loader2 size={22} className="animate-spin text-amber-500" />
+            <Loader2 size={22} className="animate-spin text-rose-500" />
             Loading departments…
           </div>
         ) : (

@@ -5,12 +5,16 @@ const BASE = '/departments'
 export type Department = {
   id: string
   name: string
+  departmentCode: string
+  slug: string
   createdAt: string
   updatedAt: string
 }
 
 export type CreateDepartmentInput = {
   name: string
+  departmentCode: string
+  slug: string
 }
 
 export type UpdateDepartmentInput = CreateDepartmentInput

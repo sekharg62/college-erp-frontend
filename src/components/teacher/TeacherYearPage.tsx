@@ -16,11 +16,14 @@ import { groupActivitySubmissionsByStudent } from '../../utils/groupActivitySubm
 type TeacherYearPageProps = {
   yearTitle: string
   academicYear: AcademicYear
+  /** Hides page header when nested (e.g. Submit MAAR year tabs) */
+  embedded?: boolean
 }
 
 export default function TeacherYearPage({
   yearTitle,
   academicYear,
+  embedded = false,
 }: TeacherYearPageProps) {
   const { theme } = useTheme()
   const { user } = useTeacherAuth()
@@ -84,18 +87,20 @@ export default function TeacherYearPage({
   }, [filteredStudents, yearTitle, user?.signature])
 
   return (
-    <div className="mx-auto max-w-6xl">
-      <div className="mb-4 flex shrink-0 items-center gap-2">
-        <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-amber-500/15 text-amber-500">
-          <BookOpen size={16} aria-hidden />
+    <div className={embedded ? 'w-full' : 'mx-auto max-w-6xl'}>
+      {!embedded && (
+        <div className="mb-4 flex shrink-0 items-center gap-2">
+          <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-amber-500/15 text-amber-500">
+            <BookOpen size={16} aria-hidden />
+          </div>
+          <h1 className="text-base font-semibold tracking-tight sm:text-lg">
+            {yearTitle}
+          </h1>
+          <span className={`hidden text-xs sm:inline ${mutedClass}`}>
+            Student activity submissions
+          </span>
         </div>
-        <h1 className="text-base font-semibold tracking-tight sm:text-lg">
-          {yearTitle}
-        </h1>
-        <span className={`hidden text-xs sm:inline ${mutedClass}`}>
-          Student activity submissions
-        </span>
-      </div>
+      )}
 
       {loading ? (
         <TeacherYearPageSkeleton />

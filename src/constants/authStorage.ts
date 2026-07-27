@@ -4,4 +4,4 @@ export const AUTH_STORAGE_KEYS = {
   user: 'user',
 } as const
 
-export type UserRole = 'ADMIN' | 'TEACHER' | 'STUDENT'
+export type UserRole = 'ADMIN' | 'SUPER_ADMIN' | 'TEACHER' | 'STUDENT'

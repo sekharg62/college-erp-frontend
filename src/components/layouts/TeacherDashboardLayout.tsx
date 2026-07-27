@@ -2,6 +2,7 @@ import {
   BookOpen,
   GraduationCap,
   LayoutDashboard,
+  Send,
   Settings,
   Upload,
 } from 'lucide-react'
@@ -13,6 +14,12 @@ const navItems: readonly DashboardNavItem[] = [
     to: '/teacher/dashboard',
     label: 'Dashboard',
     icon: LayoutDashboard,
+    end: true,
+  },
+  {
+    to: '/teacher/dashboard/submit-maar',
+    label: 'Submit MAAR',
+    icon: Send,
     end: true,
   },
   {

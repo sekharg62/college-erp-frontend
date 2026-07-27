@@ -1,7 +1,9 @@
 import { BrowserRouter, Route, Routes, useLocation } from 'react-router-dom'
 import { Toaster } from 'sonner'
 import AdminProtectedRoute from './components/AdminProtectedRoute'
+import SuperAdminProtectedRoute from './components/SuperAdminProtectedRoute'
 import AdminDashboardLayout from './components/layouts/AdminDashboardLayout'
+import SuperAdminDashboardLayout from './components/layouts/SuperAdminDashboardLayout'
 import TeacherDashboardLayout from './components/layouts/TeacherDashboardLayout'
 import StudentDashboardLayout from './components/layouts/StudentDashboardLayout'
 import StudentProtectedRoute from './components/StudentProtectedRoute'
@@ -29,13 +31,20 @@ import TeacherFourthYearPage from './pages/teacher/TeacherFourthYearPage'
 import TeacherSecondYearPage from './pages/teacher/TeacherSecondYearPage'
 import TeacherStudentsPage from './pages/teacher/TeacherStudentsPage'
 import TeacherSettingsPage from './pages/teacher/TeacherSettingsPage'
+import TeacherSubmitMaarPage from './pages/teacher/TeacherSubmitMaarPage'
 import TeacherThirdYearPage from './pages/teacher/TeacherThirdYearPage'
 import HomePage from './pages/HomePage'
+import SuperAdminLoginPage from './pages/SuperAdminLoginPage'
+import SuperAdminDashboardPage from './pages/superadmin/SuperAdminDashboardPage'
+import SuperAdminDepartmentPage from './pages/superadmin/SuperAdminDepartmentPage'
+import SuperAdminSemesterPage from './pages/superadmin/SuperAdminSemesterPage'
+import SuperAdminSubjectPage from './pages/superadmin/SuperAdminSubjectPage'
 
 function AppRoutes() {
   const location = useLocation()
   const hideNav =
     location.pathname.startsWith('/admin/dashboard') ||
+    location.pathname.startsWith('/superadmin/dashboard') ||
     location.pathname.startsWith('/teacher/dashboard') ||
     location.pathname.startsWith('/student/dashboard')
 
@@ -78,10 +87,15 @@ function AppRoutes() {
         </Route>
         <Route path="/admin/login" element={<AdminLoginPage />} />
         <Route path="/admin" element={<AdminPage />} />
+        <Route path="/superadmin/login" element={<SuperAdminLoginPage />} />
 
         <Route element={<TeacherProtectedRoute />}>
           <Route element={<TeacherDashboardLayout />}>
             <Route path="/teacher/dashboard" element={<TeacherDashboardPage />} />
+            <Route
+              path="/teacher/dashboard/submit-maar"
+              element={<TeacherSubmitMaarPage />}
+            />
             <Route
               path="/teacher/dashboard/1st-year"
               element={<TeacherFirstYearPage />}
@@ -123,6 +137,27 @@ function AppRoutes() {
             <Route
               path="/admin/dashboard/teacher"
               element={<AdminTeacherPage />}
+            />
+          </Route>
+        </Route>
+
+        <Route element={<SuperAdminProtectedRoute />}>
+          <Route element={<SuperAdminDashboardLayout />}>
+            <Route
+              path="/superadmin/dashboard"
+              element={<SuperAdminDashboardPage />}
+            />
+            <Route
+              path="/superadmin/dashboard/department"
+              element={<SuperAdminDepartmentPage />}
+            />
+            <Route
+              path="/superadmin/dashboard/semester"
+              element={<SuperAdminSemesterPage />}
+            />
+            <Route
+              path="/superadmin/dashboard/subject"
+              element={<SuperAdminSubjectPage />}
             />
           </Route>
         </Route>

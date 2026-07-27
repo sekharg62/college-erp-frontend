@@ -11,3 +11,8 @@ interface ImportMetaEnv {
 interface ImportMeta {
   readonly env: ImportMetaEnv
 }
+
+interface Window {
+  /** Latest auto-submit payload (debug / extension fallback) */
+  __MAAR_AUTO_SUBMIT__?: import('./utils/maarAutoSubmitBridge').MaarAutoSubmitPayload
+}

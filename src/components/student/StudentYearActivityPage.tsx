@@ -43,6 +43,8 @@ export type YearActivitySubmission = {
 type StudentYearActivityPageProps = {
   yearTitle: string
   academicYear: AcademicYear
+  /** Fills parent height; hides page header (e.g. teacher Submit MAAR shell) */
+  embedded?: boolean
 }
 
 type RowKey = string
@@ -143,6 +145,7 @@ type PreviewState = {
 export default function StudentYearActivityPage({
   yearTitle,
   academicYear,
+  embedded = false,
 }: StudentYearActivityPageProps) {
   const {
     cardClass,
@@ -380,17 +383,23 @@ export default function StudentYearActivityPage({
     [],
   )
 
+  const rootClass = embedded
+    ? 'flex h-full min-h-0 w-full flex-col overflow-hidden'
+    : 'mx-auto flex h-[calc(100dvh-var(--header-height)-1.25rem)] max-h-[calc(100dvh-var(--header-height)-1.25rem)] w-full max-w-6xl min-h-0 flex-col overflow-hidden sm:h-[calc(100dvh-var(--header-height)-1.5rem)] sm:max-h-[calc(100dvh-var(--header-height)-1.5rem)]'
+
   return (
-    <div className="mx-auto flex h-[calc(100dvh-var(--header-height)-1.25rem)] max-h-[calc(100dvh-var(--header-height)-1.25rem)] w-full max-w-6xl min-h-0 flex-col overflow-hidden sm:h-[calc(100dvh-var(--header-height)-1.5rem)] sm:max-h-[calc(100dvh-var(--header-height)-1.5rem)]">
-      <div className="mb-2 flex shrink-0 items-center gap-2">
-        <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-amber-500/15 text-amber-500">
-          <BookOpen size={16} aria-hidden />
+    <div className={rootClass}>
+      {!embedded && (
+        <div className="mb-2 flex shrink-0 items-center gap-2">
+          <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-amber-500/15 text-amber-500">
+            <BookOpen size={16} aria-hidden />
+          </div>
+          <h1 className="text-base font-semibold tracking-tight sm:text-lg">{yearTitle}</h1>
+          <span className={`hidden min-w-0 truncate text-xs sm:inline ${mutedClass}`}>
+            Upload proof per activity
+          </span>
         </div>
-        <h1 className="text-base font-semibold tracking-tight sm:text-lg">{yearTitle}</h1>
-        <span className={`hidden min-w-0 truncate text-xs sm:inline ${mutedClass}`}>
-          Upload proof per activity
-        </span>
-      </div>
+      )}
 
       <div className={`relative flex min-h-0 flex-1 flex-col overflow-hidden rounded-2xl border shadow-sm ${cardClass}`}>
         {isLoadingSubmissions && (
